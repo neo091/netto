@@ -12,7 +12,7 @@ import Layout from "../layouts/Layout"
 import { getDateRange } from "../lib/util"
 import { deleteHistoryRecord, fetchHistoryData } from "../lib/api"
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 10
 
 const History = () => {
   const [historyList, setHistoryList] = useState([])
@@ -20,8 +20,9 @@ const History = () => {
   const [page, setPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const [filter, setFilter] = useState("today") // "all", "today", "week", "month"
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
   const { user } = useAuth()
-  const { currency } = useConfig()
+  const { currency, percentage } = useConfig()
 
   const [stats, setStats] = useState({
     totalBruto: 0,
@@ -41,8 +42,9 @@ const History = () => {
       const result = await fetchHistoryData(
         user.id,
         page,
-        ITEMS_PER_PAGE,
+        itemsPerPage,
         dateLimit,
+        percentage
       )
 
       setHistoryList(result.history)
@@ -57,7 +59,9 @@ const History = () => {
 
   useEffect(() => {
     loadHistory()
-  }, [user.id, page, filter])
+  }, [user.id, page, filter, itemsPerPage])
+
+
 
   const handleDelete = (tripId) => {
     Swal.fire({
@@ -88,7 +92,7 @@ const History = () => {
     })
   }
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
 
   return (
     <>
@@ -105,7 +109,7 @@ const History = () => {
                 <div className="bg-green-500/10 p-2 rounded-lg">💰</div>
                 <div className="text-left">
                   <p className="text-[10px] text-gray-500 uppercase font-bold">
-                    Ganancia Hoy (40%)
+                    Ganancia {filter} (40%)
                   </p>
                   <p className="text-xl font-black text-white">
                     {stats.gananciaNeta.toFixed(2)}
@@ -125,7 +129,7 @@ const History = () => {
                 {/* GANANCIA REAL (TU 40%) */}
                 <div className="text-center mb-6 pb-6 border-b border-gray-700/50">
                   <p className="text-green-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
-                    Tu Ganancia Neta (40%)
+                    Tu Ganancia Neta ({percentage}%)
                   </p>
                   <p className="text-4xl font-black text-white">
                     {stats.gananciaNeta.toFixed(2)}
@@ -160,11 +164,10 @@ const History = () => {
                   </div>
                 </div>
                 <div
-                  className={`p-4 rounded-2xl flex justify-between items-center ${
-                    stats.diferenciaEfectivo >= 0
-                      ? "bg-green-500/10 border border-green-500/20" // Caso: Te falta cobrar
-                      : "bg-red-500/10 border border-red-500/20" // Caso: Debes entregar
-                  }`}
+                  className={`p-4 rounded-2xl flex justify-between items-center ${stats.diferenciaEfectivo >= 0
+                    ? "bg-green-500/10 border border-green-500/20" // Caso: Te falta cobrar
+                    : "bg-red-500/10 border border-red-500/20" // Caso: Debes entregar
+                    }`}
                 >
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-tighter text-gray-400">
@@ -173,11 +176,10 @@ const History = () => {
                         : "Debes entregar a la empresa:"}
                     </p>
                     <p
-                      className={`text-xl font-black ${
-                        stats.diferenciaEfectivo >= 0
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
+                      className={`text-xl font-black ${stats.diferenciaEfectivo >= 0
+                        ? "text-green-500"
+                        : "text-red-500"
+                        }`}
                     >
                       {Math.abs(stats.diferenciaEfectivo).toFixed(2)} {currency}
                     </p>
@@ -200,6 +202,8 @@ const History = () => {
               <ExportToCVSButton filter={filter} historyList={historyList} />
             </div>
 
+
+
             <div className="flex gap-2 px-4 py-2 overflow-x-auto bg-gray-900 no-scrollbar">
               {[
                 { id: "today", label: "Hoy" },
@@ -213,11 +217,10 @@ const History = () => {
                     setPage(0)
                     setFilter(f.id)
                   }}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
-                    filter === f.id
-                      ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
-                      : "bg-gray-800 text-gray-400 border border-gray-700"
-                  }`}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${filter === f.id
+                    ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
+                    : "bg-gray-800 text-gray-400 border border-gray-700"
+                    }`}
                 >
                   {f.label}
                 </button>
@@ -243,7 +246,7 @@ const History = () => {
             </div>
 
             {/* Paginador Mejorado */}
-            {!loading && totalCount > ITEMS_PER_PAGE && (
+            {!loading && totalCount > itemsPerPage && (
               <Paginador
                 page={page}
                 totalPages={totalPages}

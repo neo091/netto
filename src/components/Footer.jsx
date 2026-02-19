@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useAuth } from "../context/auth/useAuth"
 import { useStatus } from "../context/status/useStatus"
 import { IconChart, IconClock } from "../assets/Icons" // Asegúrate de tener iconos de historial y pausa
+import { toast } from "sonner"
 
 const Footer = () => {
   const { logout } = useAuth()
@@ -23,18 +24,22 @@ const Footer = () => {
 
         {/* BOTÓN DESCANSAR (DINÁMICO) */}
         <button
-          onClick={restStatus}
-          className={`flex flex-col items-center justify-center gap-1 py-2 rounded-2xl active:scale-90 transition-all ${
-            status === "descansando"
-              ? "text-yellow-500 bg-yellow-500/10 border border-yellow-500/20"
-              : "text-gray-400 hover:bg-gray-800"
-          }`}
+          onClick={() => {
+
+            if (status === "ocupado") toast.error('no puedes descansar ahora')
+            else
+              restStatus()
+          }}
+          className={`flex flex-col items-center justify-center gap-1 py-2 rounded-2xl active:scale-90 transition-all ${status === "descansando"
+            ? "text-yellow-500 bg-yellow-500/10 border border-yellow-500/20"
+            : "text-gray-400 hover:bg-gray-800"
+            }`}
         >
           <span className="text-xl">
             {status === "descansando" ? "⚡" : "☕"}
           </span>
           <span className="text-[10px] font-black uppercase tracking-widest">
-            {status === "descansando" ? "Activar" : "Pausa"}
+            {status === "descansando" ? "Trabajar" : "Descansar"}
           </span>
         </button>
 

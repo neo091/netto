@@ -12,6 +12,7 @@ import History from "./pages/History"
 import { Login } from "./components/Login"
 import Loader from "./components/Loader"
 import { useAuth } from "./context/auth/useAuth"
+import { Toaster } from "sonner"
 
 const LoginRedirect = () => {
   const { user, loading } = useAuth()
@@ -21,28 +22,31 @@ const LoginRedirect = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginRedirect />} />
-        <Route
-          path="/config"
-          element={
-            <ProtectedRoute>
-              <Config />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute>
-              <History />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginRedirect />} />
+          <Route
+            path="/config"
+            element={
+              <ProtectedRoute>
+                <Config />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+      <Toaster />
+    </>
   )
 }
 

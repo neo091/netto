@@ -9,6 +9,7 @@ const initialState = {
   abreviated: true,
   whatsAppReport: false,
   currency: "€",
+  percentage: 40
 }
 
 export const ConfigProvider = ({ children }) => {
@@ -16,6 +17,7 @@ export const ConfigProvider = ({ children }) => {
     const localData = JSON.parse(localStorage.getItem(LOCAL_CONFIG))
     return localData ? localData : initialState
   })
+
   const setCurrency = (symbol) =>
     dispatch({ type: "SET_CURRENCY", payload: symbol })
   const toggleAbreviated = () => dispatch({ type: "TOGGLE_ABREVIATED" })
@@ -23,6 +25,10 @@ export const ConfigProvider = ({ children }) => {
     dispatch({ type: "TOGGLE_WHATSAPP_REPORT" })
   const updatePhone = ({ phone }) =>
     dispatch({ type: "UPDATE_PHONE", payload: phone })
+  const updatePorcentaje = (newPorcentaje) => {
+    dispatch({ type: "UPDATE_PORCENTAJE", payload: Number(newPorcentaje) })
+  }
+
 
   useEffect(() => {
     localStorage.setItem(LOCAL_CONFIG, JSON.stringify(state))
@@ -35,6 +41,8 @@ export const ConfigProvider = ({ children }) => {
         abreviated: state.abreviated,
         whatsAppReport: state.whatsAppReport,
         currency: state.currency,
+        percentage: state.percentage,
+        updatePorcentaje,
         setCurrency,
         toggleAbreviated,
         updatePhone,

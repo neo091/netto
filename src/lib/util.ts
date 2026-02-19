@@ -59,13 +59,22 @@ export const getDateRange = (filterType: string) => {
   }
   return fromDate.toISOString()
 }
+
 export const calculateSettlement = (
   amount: number,
   paymethod: string,
   percentage: number,
 ) => {
-  const bruto = amount
-  const neto = (bruto * percentage) / 100
-  const efectivo = paymethod.toUpperCase() === "CASH" ? bruto : 0
-  return neto - efectivo
-}
+  // Aseguramos que los valores sean números para evitar errores de tipo
+  const amountNum = Number(amount);
+  const percentNum = Number(percentage);
+
+  const earnings = (amountNum * percentNum) / 100;
+  const cashInHand = paymethod.toUpperCase() === "CASH" ? amountNum : 0;
+
+  // Resultado: Positivo = A cobrar | Negativo = A entregar
+  const balance = earnings - cashInHand;
+
+  // Redondeo a 2 decimales para evitar 0.30000000000000004
+  return Math.round(balance * 100) / 100;
+};

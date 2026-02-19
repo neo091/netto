@@ -20,6 +20,11 @@ export const configReducer = (state, action) => {
         ...state,
         currency: action.payload,
       }
+    case "UPDATE_PORCENTAJE":
+      return {
+        ...state,
+        percentage: action.payload
+      }
     default:
       return state
   }

@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 import { useStatus } from "../context/status/useStatus"
 
 import ToggleButton from "./ToggleButton"
@@ -8,6 +9,7 @@ function CenterBoton() {
   const iniciatViajeToggle = () => {
     if (status === "libre") {
       busyStatus()
+      toast('iniciando viaje')
       return
     }
     if (status === "ocupado") {

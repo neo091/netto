@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react"
 import { StatusContext } from "./StatusContext"
 import { StatusReducer } from "./StatusReducer"
+import { toast } from "sonner"
 
 const initialState = {
   status: "libre",
@@ -21,11 +22,12 @@ export const StatusProvider = ({ children }) => {
     if (state.status === "descansando") {
       dispatch({ type: "CHANGE_STATUS", payload: "libre" })
     } else {
-      // Si estoy en cualquier otro estado, me pongo a descansar ecepto si estoy ocupado, que no me deja descansar
+      // Si estoy en cualquier otro estado, me pongo a descansar excepto si estoy ocupado, que no me deja descansar
 
       if (state.status !== "ocupado") {
         dispatch({ type: "CHANGE_STATUS", payload: "descansando" })
       }
+
     }
   }
   const payStatus = () =>

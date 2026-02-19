@@ -1,3 +1,4 @@
+import { HistoryItemType } from "../components/HistoryItem"
 import { supabase } from "./supabase"
 
 /**
@@ -6,6 +7,7 @@ import { supabase } from "./supabase"
  * @param page - Página actual
  * @param itemsPerPage - Cantidad de registros por página
  * @param dateLimit - ISO String para filtrar desde una fecha específica
+ * @param percentage - Porcentaje de ganancia neta (default 40%)
  */
 
 export const fetchHistoryData = async (
@@ -13,9 +15,11 @@ export const fetchHistoryData = async (
   page: number,
   itemsPerPage: number,
   dateLimit: string | null,
+  percentage: number = 40,
 ) => {
   const from = page * itemsPerPage
   const to = from + itemsPerPage - 1
+
 
   // 1. Consulta para la lista paginada
   let query = supabase
@@ -45,19 +49,19 @@ export const fetchHistoryData = async (
   const data = resTotal.data || []
 
   const bruto = data.reduce(
-    (acc, item) => acc + (parseFloat(item.amount) || 0),
+    (acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0),
     0,
   )
 
   const tarjeta = data
-    .filter((i) => i.paymethod === "CARD")
-    .reduce((acc, item) => acc + (parseFloat(item.amount) || 0), 0)
+    .filter((i: HistoryItemType) => i.paymethod === "CARD")
+    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
 
   const efectivo = data
-    .filter((i) => i.paymethod === "CASH")
-    .reduce((acc, item) => acc + (parseFloat(item.amount) || 0), 0)
+    .filter((i: HistoryItemType) => i.paymethod === "CASH")
+    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
 
-  const gananciaNeta = (bruto * 40) / 100
+  const gananciaNeta = (bruto * percentage) / 100
   const diferenciaEfectivo = gananciaNeta - efectivo
 
   return {

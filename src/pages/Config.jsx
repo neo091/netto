@@ -8,6 +8,7 @@ import {
   IconCog,
   IconWhatsapp,
 } from "../assets/Icons"
+import { toast } from "sonner"
 
 const Config = () => {
   const {
@@ -19,6 +20,8 @@ const Config = () => {
     abreviated,
     currency,
     setCurrency,
+    percentage,
+    updatePorcentaje
   } = useConfig()
   const { logout } = useAuth()
   const [editPhone, setEditPhone] = useState(false)
@@ -28,6 +31,7 @@ const Config = () => {
     e.preventDefault()
     setEditPhone(false)
     // Aquí podrías añadir un pequeño toast de "Guardado"
+    toast('telefono actualizado')
   }
 
   return (
@@ -58,16 +62,39 @@ const Config = () => {
             {currencies.map((symbol) => (
               <button
                 key={symbol}
-                onClick={() => setCurrency(symbol)}
-                className={`flex-1 py-2 rounded-xl transition-all font-bold ${
-                  currency === symbol
-                    ? "bg-gray-700 text-white shadow-lg"
-                    : "text-gray-500"
-                }`}
+                onClick={() => {
+                  toast(`tu moneda ahora es ${symbol}`)
+                  setCurrency(symbol)
+                }}
+                className={`flex-1 py-2 rounded-xl transition-all font-bold ${currency === symbol
+                  ? "bg-gray-700 text-white shadow-lg"
+                  : "text-gray-500"
+                  }`}
               >
                 {symbol}
               </button>
             ))}
+          </div>
+        </section>
+
+        <section className="bg-gray-800/50 border border-gray-700 rounded-3xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+
+            <div>
+              <span className="font-bold block">Porcentaje  <span className="text-yellow-500 font-bold text-xl w-10 text-center">
+                {percentage} %
+              </span></span>
+              <p className="text-[10px] text-gray-500 uppercase">
+                % de cuanto ganaras por cada carrera (viaje)
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-between bg-gray-900/50 p-2 rounded-2xl border border-gray-700">
+            <input type="range" min={0} max={100} value={percentage || 40} onChange={(e) => {
+              updatePorcentaje(e.target.value)
+
+            }} className="w-full" />
           </div>
         </section>
 
@@ -87,7 +114,12 @@ const Config = () => {
             </div>
             {/* TOGGLE SWITCH */}
             <button
-              onClick={togglewhatsAppReport}
+              onClick={() => {
+                toast(`Reportes por WhatsApp ${!whatsAppReport ? "Activados" : "Desactivados"}`, {
+                  duration: 1000
+                })
+                togglewhatsAppReport()
+              }}
               className={`w-12 h-6 rounded-full transition-colors relative ${whatsAppReport ? "bg-green-500" : "bg-gray-700"}`}
             >
               <div
@@ -148,7 +180,13 @@ const Config = () => {
                 </div>
               </div>
               <button
-                onClick={toggleAbreviated}
+                onClick={() => {
+                  toast(`Abreviado ${!abreviated ? "Activados" : "Desactivados"}`, {
+                    description: `${!abreviated ? 'Ahora los mensajes enviados a WhatsApp estarán abreviados.' : "Ahora los mensajes enviados a WhatsApp estarán completos."}`,
+                    duration: 3000,
+                  })
+                  toggleAbreviated()
+                }}
                 className={`w-12 h-6 rounded-full transition-colors relative ${abreviated ? "bg-blue-500" : "bg-gray-700"}`}
               >
                 <div
