@@ -15,7 +15,7 @@ const initialState = {
 export const ConfigProvider = ({ children }) => {
   const [state, dispatch] = useReducer(configReducer, undefined, () => {
     const localData = JSON.parse(localStorage.getItem(LOCAL_CONFIG))
-    return localData ? localData : initialState
+    return localData ? { ...initialState, ...localData } : initialState
   })
 
   const setCurrency = (symbol) =>
