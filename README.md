@@ -8,7 +8,7 @@
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](#)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](#)
 
-[🚀 Ver Demo en Vivo](TU_URL_DE_CUBEPATH_AQUI) · [📂 Repositorio](https://github.com/TU_USUARIO/netto-app)
+[🚀 Ver Demo en Vivo](TU_URL_DE_CUBEPATH_AQUI) | [📂 Repositorio](https://github.com/neo091/netto)
 
 </div>
 
@@ -69,14 +69,14 @@ Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalab
 
 ## 🛠️ Instalación Local
 
-1. Clona el repositorio:
-
-````bash
 1. **Clona el repositorio**:
-   ```bash
-   git clone [https://github.com/neo091/netto.git](https://github.com/neo091/netto.git)
-   cd netto
-````
+
+git clone [https://github.com/neo091/netto.git](https://github.com/neo091/netto.git)
+
+```bash
+
+cd netto
+```
 
 2. Instala las dependencias:
 
@@ -102,3 +102,4 @@ npm run dev
 Proyecto creado para la Hackatón CubePath 2026 🚀
 
 </div>
+````
