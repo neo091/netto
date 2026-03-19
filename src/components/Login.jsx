@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom" // Asumiendo que usas react-router
+import { useNavigate, Link } from "react-router-dom"
 import Swal from "sweetalert2"
 import { useAuth } from "../context/auth/useAuth"
 import PageTitle from "./PageTitle"
@@ -48,7 +48,7 @@ export const Login = () => {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center px-4 relative overflow-hidden">
       {/* Decoración de fondo para mantener el estilo de la Landing */}
-      <div className="absolute top-0 w-72 h-72 bg-green-500/10 blur-[120px] rounded-full -z-0"></div>
+      <div className="absolute top-0 w-72 h-72 bg-green-500/10 blur-[120px] rounded-full z-0"></div>
 
       <div className="w-full max-w-md z-10">
         {/* Logo o Nombre de la App */}
@@ -115,9 +115,11 @@ export const Login = () => {
         {/* Link para registro (opcional) */}
         <p className="text-center text-gray-500 mt-8 text-sm">
           ¿No tienes cuenta?{" "}
-          <span className="text-green-500 font-bold cursor-pointer">
-            Contacta con soporte
-          </span>
+          <Link to={"/SignUp"} >
+
+            <span className="text-green-500 font-bold cursor-pointer">
+              Contacta con soporte
+            </span></Link>
         </p>
       </div>
     </div>

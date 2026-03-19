@@ -126,12 +126,12 @@ function HomeComponent() {
           conducir.
         </p>
         <Link
-          to="/login"
+          to="/SignUp"
           className="inline-block bg-white text-black font-bold py-4 px-12 rounded-2xl text-lg hover:bg-green-500 transition-colors"
         >
           Crear mi cuenta gratis
         </Link>
-        <p className="mt-12 text-gray-600 text-sm font-medium uppercase tracking-[0.3em]">
+        <p className="text-center text-[10px] text-gray-600 mt-12 uppercase tracking-[0.3em]">
           Netto &copy; 2026
         </p>
       </footer>
