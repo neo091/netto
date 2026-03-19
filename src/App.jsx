@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom"
-import "./App.css"
 import Home from "./pages/Home"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Config from "./pages/Config"
