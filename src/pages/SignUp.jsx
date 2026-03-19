@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IconChevronLeft, IconWhatsapp, IconAlert } from "../assets/Icons";
 import { toast } from "sonner";
+import CenterContentLayout from "../layouts/CenterContentLayout";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const SignUp = () => {
   };
 
   return (
-    <main className="bg-gray-900 min-h-screen text-white p-6 flex flex-col justify-center relative overflow-hidden">
+    <CenterContentLayout>
       {/* Decoración de fondo (Brillo Esmeralda sutil) */}
       <div className="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
 
@@ -86,7 +87,7 @@ const SignUp = () => {
       <p className="text-center text-[10px] text-gray-600 mt-12 uppercase tracking-[0.3em]">
         Netto &copy; 2026
       </p>
-    </main>
+    </CenterContentLayout>
   );
 };
 

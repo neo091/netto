@@ -1,8 +1,9 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useAuth } from "../context/auth/useAuth"
 import PageTitle from "../components/PageTitle"
 import LoggedSection from "../components/features/LoggedSection"
 import LoginFormSection from "../components/features/LoginFormSection"
+import CenterContentLayout from "../layouts/CenterContentLayout"
 
 
 const Login = () => {
@@ -13,7 +14,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center px-4 relative overflow-hidden">
+    <CenterContentLayout>
       <div className="absolute top-0 w-72 h-72 bg-green-500/10 blur-[120px] rounded-full z-0"></div>
 
       <div className="w-full max-w-md z-10">
@@ -33,7 +34,7 @@ const Login = () => {
             </span></Link>
         </p>
       </div>
-    </div>
+    </CenterContentLayout>
   )
 }
 export default Login

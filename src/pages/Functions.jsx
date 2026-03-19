@@ -95,7 +95,7 @@ const Functions = () => {
 
 
   return (
-    <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 font-sans ">
+    <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 font-sans fade-in ">
       {/* Header con efecto Blur */}
       <div className="flex items-center gap-4 mb-10 sticky top-0 bg-gray-900/80 backdrop-blur-md py-4 z-10">
         <Link
