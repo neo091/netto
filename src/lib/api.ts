@@ -20,8 +20,6 @@ export const fetchHistoryData = async (
   const from = page * itemsPerPage
   const to = from + itemsPerPage - 1
 
-
-  // 1. Consulta para la lista paginada
   let query = supabase
     .from("history")
     .select("*", { count: "exact" })
@@ -31,21 +29,18 @@ export const fetchHistoryData = async (
 
   if (dateLimit) query = query.gte("created_at", dateLimit)
 
-  // 2. Consulta para los totales (ligera)
   let totalQuery = supabase
     .from("history")
-    .select("amount, paymethod")
+    .select("*")
     .eq("user_id", userId)
 
   if (dateLimit) totalQuery = totalQuery.gte("created_at", dateLimit)
 
-  // Ejecutamos ambas en paralelo para máxima velocidad
   const [resList, resTotal] = await Promise.all([query, totalQuery])
 
   if (resList.error) throw resList.error
   if (resTotal.error) throw resTotal.error
 
-  // --- LÓGICA DE NEGOCIO (NETTO) ---
   const data = resTotal.data || []
 
   const bruto = data.reduce(
