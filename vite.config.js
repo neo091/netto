@@ -10,4 +10,13 @@ export default defineConfig({
     environtment: "jsdom",
     setupFiles: "./src/tests/setup.js",
   },
+  server: {
+    proxy: {
+      '/api-n8n': {
+        target: 'https://vps22397.cubepath.net',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-n8n/, '')
+      }
+    }
+  }
 })

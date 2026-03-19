@@ -80,3 +80,28 @@ export const deleteHistoryRecord = async (recordId: string, userId: string) => {
     .eq("user_id", userId)
   if (error) throw error
 }
+
+export const sendFeedback = async ({ feedback }: { feedback: string }) => {
+  try {
+    const response = await fetch("https://vps22397.cubepath.net/webhook-test/9b7ccb43-b6ae-469a-b895-a8d364275e7f", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: feedback,
+        user: "Usuario Beta", // Aquí podrías pasar el email si ya lo tienes
+        page: window.location.pathname,
+        timestamp: new Date().toLocaleString()
+      }),
+    })
+
+    if (response.ok) {
+      return { message: "feedback send!" }
+    } else {
+      throw Error("error al enviar feedback")
+    }
+
+
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -7,7 +7,10 @@ import {
   IconDelete,
   IconsTrash,
   IconWhatsapp,
+  IconAlert,
 } from "../assets/Icons"; // Asegúrate de que la ruta sea correcta
+import { useState } from "react";
+import { sendFeedback } from "../lib/api";
 
 const functions = [
   {
@@ -41,6 +44,30 @@ const functions = [
 ];
 
 const Functions = () => {
+
+  const [feedback, setFeedback] = useState("")
+  const [status, setStatus] = useState("idle")
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!feedback.trim()) return;
+
+    setStatus("sending")
+
+    const response = await sendFeedback({ feedback })
+
+    if (response.message) {
+      setStatus("success")
+      setFeedback("")
+      setTimeout(() => setStatus('idle'), 3000);
+    } else {
+      console.log("error al enviar")
+    }
+
+
+  }
+
+
   return (
     <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 font-sans">
       {/* Header con efecto Blur */}
@@ -56,7 +83,7 @@ const Functions = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
         {functions.map((func, index) => (
-          <Link
+          <div
             key={index}
             to={func.path}
             className={`group p-5 rounded-3xl border transition-all duration-300 ${func.status !== "Próximamente"
@@ -84,10 +111,45 @@ const Functions = () => {
             <p className="text-xs text-gray-500 leading-relaxed font-medium">
               {func.desc}
             </p>
-          </Link>
+          </div>
         ))}
 
 
+      </div>
+
+      <div className="mt-8">
+        <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl max-w-md m-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-emerald-500/10 rounded-lg">
+              <IconAlert className="text-emerald-500" />
+            </div>
+            <h3 className="font-bold text-lg">¿Qué función te gustaría que agreguemos?</h3>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Ej: Me gustaría ver un gráfico de ingresos mensuales..."
+              className="w-full bg-black/40 border border-gray-700 rounded-2xl p-4 text-sm focus:border-emerald-500 outline-none transition-all resize-none h-24"
+              disabled={status === 'sending' || status === 'success'}
+            />
+
+            <button
+              type="submit"
+              disabled={status !== 'idle' || !feedback.trim()}
+              className={`w-full py-3 rounded-2xl font-bold transition-all ${status === 'success'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-emerald-500 text-black hover:bg-emerald-400 disabled:opacity-50'
+                }`}
+            >
+              {status === 'idle' && 'Enviar Feedback'}
+              {status === 'sending' && 'Enviando a Discord...'}
+              {status === 'success' && '¡Recibido! Gracias'}
+              {status === 'error' && 'Error al enviar'}
+            </button>
+          </form>
+        </div>
       </div>
       {/* Banner de Integridad de Datos (Usando IconDelete como escudo) */}
       <div className="mt-8 p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-4 max-w-md m-auto">
