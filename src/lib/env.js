@@ -1,0 +1,1 @@
+export const SHEETBEST_URL = import.meta.env.VITE_SHEETBEST_URL
