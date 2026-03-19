@@ -1,25 +1,18 @@
 import {
-  Navigate,
   Route,
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom"
-import Home from "./pages/Home"
-import ProtectedRoute from "./components/ProtectedRoute"
-import Config from "./pages/Config"
-import History from "./pages/History"
-import { Login } from "./components/Login"
-import Loader from "./components/Loader"
-import { useAuth } from "./context/auth/useAuth"
-import { Toaster } from "sonner"
-import Functions from "./pages/Functions"
-import SignUp from "./pages/SignUp"
 
-const LoginRedirect = () => {
-  const { user, loading } = useAuth()
-  if (loading) return <Loader />
-  return user ? <Navigate to="/" /> : <Login />
-}
+import ProtectedRoute from "./components/ProtectedRoute"
+import { Toaster } from "sonner"
+
+import Functions from "./pages/Functions"
+import History from "./pages/History"
+import Config from "./pages/Config"
+import SignUp from "./pages/SignUp"
+import Home from "./pages/Home"
+import Login from "./pages/Login"
 
 function App() {
   return (
@@ -29,7 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/Functions" element={<Functions />} />
           <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/login" element={<LoginRedirect />} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/config"
             element={
