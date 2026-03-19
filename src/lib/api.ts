@@ -82,26 +82,53 @@ export const deleteHistoryRecord = async (recordId: string, userId: string) => {
 }
 
 export const sendFeedback = async ({ feedback }: { feedback: string }) => {
-  try {
-    const response = await fetch("https://vps22397.cubepath.net/webhook-test/9b7ccb43-b6ae-469a-b895-a8d364275e7f", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: feedback,
-        user: "Usuario Beta", // Aquí podrías pasar el email si ya lo tienes
-        page: window.location.pathname,
-        timestamp: new Date().toLocaleString()
-      }),
-    })
+  const cleanFeedback = feedback
+    .replace(/<[^>]*>?/gm, '')
+    .trim();
 
-    if (response.ok) {
-      return { message: "feedback send!" }
-    } else {
-      throw Error("error al enviar feedback")
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+  try {
+    const response = await fetch("https://api.sheetbest.com/sheets/e31fd0f5-59d1-4868-ab12-ebe2a01df0c6", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        feedback: cleanFeedback,
+        name: "Usuario Beta",
+        timestamp: new Date().toISOString(),
+        //metadata: {
+        //  user: "Usuario Beta",
+        //  page: window.location.pathname,
+        //  timestamp: new Date().toISOString(),
+        //  browser: navigator.userAgent.split(') ')[1]
+        //}
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Server error: ${response.status}`);
     }
 
+    return { success: true, message: "feedback send!" };
 
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+
+    if (error.name === 'AbortError') {
+      console.error("Feedback error: Timeout excedido");
+      return { success: false, error: "El servidor tardó demasiado en responder." };
+    }
+
+    console.error("Feedback error:", error.message);
+    return { success: false, error: "No se pudo enviar el feedback." };
   }
-}
+};

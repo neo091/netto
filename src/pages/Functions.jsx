@@ -11,6 +11,7 @@ import {
 } from "../assets/Icons"; // Asegúrate de que la ruta sea correcta
 import { useState } from "react";
 import { sendFeedback } from "../lib/api";
+import { toast } from "sonner";
 
 const functions = [
   {
@@ -47,10 +48,23 @@ const Functions = () => {
 
   const [feedback, setFeedback] = useState("")
   const [status, setStatus] = useState("idle")
+  const [honeypot, setHoneypot] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (honeypot) return;
     if (!feedback.trim()) return;
+
+    if (feedback.trim().length < 10) {
+      toast.success("Por favor, describe un poco más tu sugerencia.", {
+        description: "(mínimo 10 caracteres).",
+        style: { background: '#111827', color: '#FFFFFF', border: '1px solid #10b981' },
+        classNames: {
+          description: "text-red-500"
+        }
+      });
+      return;
+    }
 
     setStatus("sending")
 
@@ -63,13 +77,11 @@ const Functions = () => {
     } else {
       console.log("error al enviar")
     }
-
-
   }
 
 
   return (
-    <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 font-sans">
+    <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 font-sans ">
       {/* Header con efecto Blur */}
       <div className="flex items-center gap-4 mb-10 sticky top-0 bg-gray-900/80 backdrop-blur-md py-4 z-10">
         <Link
@@ -134,6 +146,8 @@ const Functions = () => {
               className="w-full bg-black/40 border border-gray-700 rounded-2xl p-4 text-sm focus:border-emerald-500 outline-none transition-all resize-none h-24"
               disabled={status === 'sending' || status === 'success'}
             />
+
+            <input type="text" className="hidden" onChange={(e) => setHoneypot(e.target.value)} />
 
             <button
               type="submit"
