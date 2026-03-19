@@ -33,9 +33,9 @@ En el sector del taxi, el conductor suele trabajar bajo una comisión (comúnmen
 ## 📸 Capturas de Pantalla
 
 <div align="center">
-  <img src="https://via.placeholder.com/300x600?text=Dashboard+Netto" alt="Dashboard" width="30%" />
-  <img src="https://via.placeholder.com/300x600?text=Historial+Netto" alt="Historial" width="30%" />
-  <img src="https://via.placeholder.com/300x600?text=Configuración+Netto" alt="Configuración" width="30%" />
+  <img src="/src/assets/home.png" alt="Home" width="30%" />
+  <img src="/src/assets/configuracion.png" alt="Configuración" width="30%" />
+  <img src="/src/assets/historial.png" alt="Historial" width="30%" />
 </div>
 
 ---
