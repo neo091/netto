@@ -39,9 +39,9 @@ function HomeComponent() {
           >
             Iniciar Jornada
           </Link>
-          <button className="bg-gray-800 text-white font-bold py-4 px-8 rounded-2xl text-lg border border-gray-700">
+          <Link to={"/Functions"} className="bg-gray-800 text-white font-bold py-4 px-8 rounded-2xl text-lg border border-gray-700">
             Ver Funciones
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -53,7 +53,7 @@ function HomeComponent() {
           </div>
           <h3 className="text-xl font-bold mb-3">Liquidación Real</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
-            Calculamos automáticamente tu 40%. Diferencia entre efectivo y
+            Calculamos automáticamente tu %. Diferencia entre efectivo y
             tarjeta para que sepas qué entregar al final del día.
           </p>
         </div>
@@ -85,11 +85,11 @@ function HomeComponent() {
       <section className="py-20 bg-gray-900 border-y border-gray-800">
         <div className="max-w-4xl mx-auto text-center px-6">
           <h2 className="text-3xl font-bold mb-12">
-            Control total en cada kilómetro
+            Control total de tus ganancias
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <p className="text-4xl font-black text-green-500">40%</p>
+              <p className="text-4xl font-black text-green-500">%</p>
               <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2 font-bold">
                 Ganancia Automática
               </p>

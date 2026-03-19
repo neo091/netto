@@ -102,4 +102,3 @@ npm run dev
 Proyecto creado para la Hackatón CubePath 2026 🚀
 
 </div>
-````

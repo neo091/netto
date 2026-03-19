@@ -12,6 +12,7 @@ import { Login } from "./components/Login"
 import Loader from "./components/Loader"
 import { useAuth } from "./context/auth/useAuth"
 import { Toaster } from "sonner"
+import Functions from "./pages/Functions"
 
 const LoginRedirect = () => {
   const { user, loading } = useAuth()
@@ -25,6 +26,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/Functions" element={<Functions />} />
           <Route path="/login" element={<LoginRedirect />} />
           <Route
             path="/config"
