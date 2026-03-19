@@ -1,8 +1,7 @@
-import CenterBoton from "../components/CenterBotton"
-
 import Footer from "../components/Footer"
 import Header from "../components/Header"
 import HomeSection from "../components/HomeSection"
+import CenterButton from "../components/CenterButton"
 import FinishTripDialog from "../components/FinishTripDialog"
 import Loader from "../components/Loader"
 import { useAuth } from "../context/auth/useAuth"
@@ -18,7 +17,7 @@ const Home = () => {
   return (
     <Layout>
       <Header />
-      <CenterBoton />
+      <CenterButton />
       <Footer />
       <FinishTripDialog />
     </Layout>

@@ -3,10 +3,10 @@ import { useStatus } from "../context/status/useStatus"
 
 import ToggleButton from "./ToggleButton"
 
-function CenterBoton() {
+function CenterButton() {
   const { status, busyStatus, freeStatus, payStatus } = useStatus()
 
-  const iniciatViajeToggle = () => {
+  const initTripToggle = () => {
     if (status === "libre") {
       busyStatus()
       toast('iniciando viaje')
@@ -36,7 +36,7 @@ function CenterBoton() {
     >
       {/* Luces de fondo dinámicas según estado */}
       <div
-        className={`absolute inset-0 bg-gradient-to-b ${statusStyles[status] || ""} transition-colors duration-700`}
+        className={`absolute inset-0 bg-linear-to-b ${statusStyles[status] || ""} transition-colors duration-700`}
       />
 
       <section className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
@@ -48,7 +48,7 @@ function CenterBoton() {
           )}
 
           <div className="relative z-20">
-            <ToggleButton onPress={iniciatViajeToggle} />
+            <ToggleButton onPress={initTripToggle} />
           </div>
         </div>
 
@@ -71,4 +71,4 @@ function CenterBoton() {
   )
 }
 
-export default CenterBoton
+export default CenterButton
