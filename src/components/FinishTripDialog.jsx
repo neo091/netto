@@ -5,8 +5,8 @@ import { useStatus } from "../context/status/useStatus"
 import { supabase } from "../lib/supabase"
 import { useAuth } from "../context/auth/useAuth"
 
-function FinishTripDoalog() {
-  const { phone, abreviated, whatsAppReport, currency } = useConfig()
+function FinishTripDialog() {
+  const { phone, abbreviated, whatsAppReport, currency } = useConfig()
   const { status, freeStatus } = useStatus()
   const [monto, setMonto] = useState("")
   const [metodoPago, setMetodoPago] = useState("efectivo")
@@ -35,7 +35,7 @@ function FinishTripDoalog() {
     } catch (error) {
       console.log(error)
     } finally {
-      dissmiss()
+      dismiss()
     }
   }
 
@@ -46,7 +46,7 @@ function FinishTripDoalog() {
     if (whatsAppReport) {
       const letraPago = metodoPago === "tarjeta" ? "t" : "e"
 
-      const mensaje = abreviated
+      const mensaje = abbreviated
         ? `✅ ${monto}${letraPago}`
         : `✅ Recaudación: ${monto}${currency} [${metodoPago.toUpperCase()}]`
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`
@@ -54,7 +54,7 @@ function FinishTripDoalog() {
     }
   }
 
-  const dissmiss = () => {
+  const dismiss = () => {
     setMonto("")
     setMetodoPago("efectivo")
     freeStatus()
@@ -85,21 +85,19 @@ function FinishTripDoalog() {
         <div className="flex gap-2 mt-5 mb-5">
           <button
             onClick={() => setMetodoPago("efectivo")}
-            className={`rounded flex-1 p-3 ${
-              metodoPago === "efectivo"
-                ? "bg-green-500 text-green-900  font-black"
-                : "bg-gray-300"
-            }`}
+            className={`rounded flex-1 p-3 ${metodoPago === "efectivo"
+              ? "bg-green-500 text-green-900  font-black"
+              : "bg-gray-300"
+              }`}
           >
             <i className="fa-solid fa-money-bill-wave"></i> Efectivo
           </button>
           <button
             onClick={() => setMetodoPago("tarjeta")}
-            className={`rounded flex-1 p-3 ${
-              metodoPago === "tarjeta"
-                ? "bg-green-500 text-green-900  font-black"
-                : "bg-gray-300"
-            }`}
+            className={`rounded flex-1 p-3 ${metodoPago === "tarjeta"
+              ? "bg-green-500 text-green-900  font-black"
+              : "bg-gray-300"
+              }`}
           >
             <i className="fa-solid fa-credit-card"></i> Tarjeta
           </button>
@@ -131,7 +129,7 @@ function FinishTripDoalog() {
         </div>
 
         <div className="flex gap-2 justify-between">
-          <button onClick={dissmiss} className="rounded-full p-3 bg-red-400">
+          <button onClick={dismiss} className="rounded-full p-3 bg-red-400">
             Cancelar
           </button>
 
@@ -148,4 +146,4 @@ function FinishTripDoalog() {
   )
 }
 
-export default FinishTripDoalog
+export default FinishTripDialog

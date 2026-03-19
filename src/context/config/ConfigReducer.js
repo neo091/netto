@@ -5,10 +5,10 @@ export const configReducer = (state, action) => {
         ...state,
         phone: action.payload,
       }
-    case "TOGGLE_ABREVIATED":
+    case "TOGGLE_ABBREVIATED":
       return {
         ...state,
-        abreviated: !state.abreviated,
+        abbreviated: !state.abbreviated,
       }
     case "TOGGLE_WHATSAPP_REPORT":
       return {

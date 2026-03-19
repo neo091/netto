@@ -6,7 +6,7 @@ const LOCAL_CONFIG = "local_config"
 
 const initialState = {
   phone: "604994352",
-  abreviated: true,
+  abbreviated: true,
   whatsAppReport: false,
   currency: "€",
   percentage: 40
@@ -20,8 +20,8 @@ export const ConfigProvider = ({ children }) => {
 
   const setCurrency = (symbol) =>
     dispatch({ type: "SET_CURRENCY", payload: symbol })
-  const toggleAbreviated = () => dispatch({ type: "TOGGLE_ABREVIATED" })
-  const togglewhatsAppReport = () =>
+  const toggleAbbreviated = () => dispatch({ type: "TOGGLE_ABBREVIATED" })
+  const toggleWhatsAppReport = () =>
     dispatch({ type: "TOGGLE_WHATSAPP_REPORT" })
   const updatePhone = ({ phone }) =>
     dispatch({ type: "UPDATE_PHONE", payload: phone })
@@ -38,15 +38,15 @@ export const ConfigProvider = ({ children }) => {
     <ConfigContext.Provider
       value={{
         phone: state.phone,
-        abreviated: state.abreviated,
+        abbreviated: state.abbreviated,
         whatsAppReport: state.whatsAppReport,
         currency: state.currency,
         percentage: state.percentage,
         updatePorcentaje,
         setCurrency,
-        toggleAbreviated,
+        toggleAbbreviated,
         updatePhone,
-        togglewhatsAppReport,
+        toggleWhatsAppReport,
       }}
     >
       {children}

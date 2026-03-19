@@ -15,9 +15,9 @@ const Config = () => {
     phone,
     updatePhone,
     whatsAppReport,
-    togglewhatsAppReport,
-    toggleAbreviated,
-    abreviated,
+    toggleWhatsAppReport,
+    toggleAbbreviated,
+    abbreviated,
     currency,
     setCurrency,
     percentage,
@@ -118,7 +118,7 @@ const Config = () => {
                 toast(`Reportes por WhatsApp ${!whatsAppReport ? "Activados" : "Desactivados"}`, {
                   duration: 1000
                 })
-                togglewhatsAppReport()
+                toggleWhatsAppReport()
               }}
               className={`w-12 h-6 rounded-full transition-colors relative ${whatsAppReport ? "bg-green-500" : "bg-gray-700"}`}
             >
@@ -181,16 +181,16 @@ const Config = () => {
               </div>
               <button
                 onClick={() => {
-                  toast(`Abreviado ${!abreviated ? "Activados" : "Desactivados"}`, {
-                    description: `${!abreviated ? 'Ahora los mensajes enviados a WhatsApp estarán abreviados.' : "Ahora los mensajes enviados a WhatsApp estarán completos."}`,
+                  toast(`Abreviado ${!abbreviated ? "Activados" : "Desactivados"}`, {
+                    description: `${!abbreviated ? 'Ahora los mensajes enviados a WhatsApp estarán abreviados.' : "Ahora los mensajes enviados a WhatsApp estarán completos."}`,
                     duration: 3000,
                   })
-                  toggleAbreviated()
+                  toggleAbbreviated()
                 }}
-                className={`w-12 h-6 rounded-full transition-colors relative ${abreviated ? "bg-blue-500" : "bg-gray-700"}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${abbreviated ? "bg-blue-500" : "bg-gray-700"}`}
               >
                 <div
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${abreviated ? "left-7" : "left-1"}`}
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${abbreviated ? "left-7" : "left-1"}`}
                 />
               </button>
             </div>
@@ -201,7 +201,7 @@ const Config = () => {
                 Ejemplo de envío:
               </p>
               <p className="text-sm font-mono text-blue-400">
-                {abreviated ? "15.00e" : `✅ 15.00 ${currency} - efectivo`}
+                {abbreviated ? "15.00e" : `✅ 15.00 ${currency} - efectivo`}
               </p>
             </div>
           </section>
