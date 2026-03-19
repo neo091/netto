@@ -56,8 +56,19 @@ const Functions = () => {
     if (!feedback.trim()) return;
 
     if (feedback.trim().length < 10) {
-      toast.success("Por favor, describe un poco más tu sugerencia.", {
+      toast.error("Por favor, describe un poco más tu sugerencia.", {
         description: "(mínimo 10 caracteres).",
+        style: { background: '#111827', color: '#FFFFFF', border: '1px solid #10b981' },
+        classNames: {
+          description: "text-red-500"
+        }
+      });
+      return;
+    }
+
+    if (feedback.trim().length > 150) {
+      toast.error("Por favor, describe un poco más tu sugerencia.", {
+        description: "(máximo 150 caracteres).",
         style: { background: '#111827', color: '#FFFFFF', border: '1px solid #10b981' },
         classNames: {
           description: "text-red-500"
@@ -73,6 +84,9 @@ const Functions = () => {
     if (response.message) {
       setStatus("success")
       setFeedback("")
+      toast.success("feedback enviado!", {
+        style: { background: '#111827', color: '#FFFFFF', border: '1px solid #10b981' },
+      })
       setTimeout(() => setStatus('idle'), 3000);
     } else {
       console.log("error al enviar")
@@ -139,13 +153,18 @@ const Functions = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Ej: Me gustaría ver un gráfico de ingresos mensuales..."
-              className="w-full bg-black/40 border border-gray-700 rounded-2xl p-4 text-sm focus:border-emerald-500 outline-none transition-all resize-none h-24"
-              disabled={status === 'sending' || status === 'success'}
-            />
+            <div className="flex flex-col">
+              <textarea
+                minLength={10}
+                maxLength={150}
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Ej: Me gustaría ver un gráfico de ingresos mensuales..."
+                className="w-full bg-black/40 border border-gray-700 rounded-2xl p-4 text-sm focus:border-emerald-500 outline-none transition-all resize-none h-24"
+                disabled={status === 'sending' || status === 'success'}
+              />
+              <span className="text-right text-sm px-4 w-full">{feedback.length} / 150</span>
+            </div>
 
             <input type="text" className="hidden" onChange={(e) => setHoneypot(e.target.value)} />
 
