@@ -13,8 +13,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api-n8n': {
-        target: 'https://vps22397.cubepath.net',
+        target: 'http://n8n-n8n-58fc88-194-26-100-153.traefik.me',
         changeOrigin: true,
+        secure: false, // <--- AÑADE ESTO para evitar errores de certificado SSL en local
         rewrite: (path) => path.replace(/^\/api-n8n/, '')
       },
       "/sheets": {

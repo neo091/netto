@@ -1,5 +1,5 @@
 import { HistoryItemType } from "../components/HistoryItem"
-import { SHEETBEST_URL } from "./env"
+import { N8N_API_BASE } from "./env"
 import { supabase } from "./supabase"
 
 
@@ -92,7 +92,7 @@ export const sendFeedback = async ({ feedback }: { feedback: string }) => {
   const timeoutId = setTimeout(() => controller.abort(), 6000);
 
   try {
-    const response = await fetch(`${SHEETBEST_URL}/sheets/e31fd0f5-59d1-4868-ab12-ebe2a01df0c6`, {
+    const response = await fetch(`${N8N_API_BASE}/webhook/aae9cdbd-3b51-4e4c-95d0-5ef814b38796`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
