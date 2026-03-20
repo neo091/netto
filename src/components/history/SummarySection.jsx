@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useConfig } from '../../context/config/useConfig'
-import { useHistory } from '../../hooks/useHistory'
 
-function SummarySection() {
+function SummarySection({ stats, filter }) {
 
   const { percentage, currency } = useConfig()
-  const { filter, stats } = useHistory()
-
   const [showSummary, setShowSummary] = useState(false)
+
   return (
     <section className=" max-w-md mx-auto w-full">
       <button
@@ -18,10 +16,10 @@ function SummarySection() {
           <div className="bg-green-500/10 p-2 rounded-lg">💰</div>
           <div className="text-left">
             <p className="text-[10px] text-gray-500 uppercase font-bold">
-              Ganancia {filter} (40%)
+              Ganancia {filter} ({percentage}%)
             </p>
             <p className="text-xl font-black text-white">
-              {stats.gananciaNeta.toFixed(2)}
+              {stats.gananciaNeta}
               {currency}
             </p>
           </div>
@@ -41,13 +39,13 @@ function SummarySection() {
               Tu Ganancia Neta ({percentage}%)
             </p>
             <p className="text-4xl font-black text-white">
-              {stats.gananciaNeta.toFixed(2)}
+              {stats.gananciaNeta}
               <span className="text-xl ml-1 text-green-500">
                 {currency}
               </span>
             </p>
             <p className="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">
-              Sobre un bruto de {stats.totalBruto.toFixed(2)}
+              Sobre un bruto de {stats.totalBruto}
               {currency}
             </p>
           </div>
@@ -58,7 +56,7 @@ function SummarySection() {
                 En Tarjeta
               </p>
               <p className="font-bold text-blue-400">
-                {stats.totalTarjeta.toFixed(2)}
+                {stats.totalTarjeta}
                 {currency}
               </p>
             </div>
@@ -67,7 +65,7 @@ function SummarySection() {
                 En Efectivo
               </p>
               <p className="font-bold text-green-400">
-                {stats.totalEfectivo.toFixed(2)}
+                {stats.totalEfectivo}
                 {currency}
               </p>
             </div>
@@ -90,7 +88,7 @@ function SummarySection() {
                   : "text-red-500"
                   }`}
               >
-                {Math.abs(stats.diferenciaEfectivo).toFixed(2)} {currency}
+                {Math.abs(stats.diferenciaEfectivo)} {currency}
               </p>
             </div>
             <div className="text-2xl">
@@ -100,8 +98,8 @@ function SummarySection() {
 
           <p className="text-[10px] text-center text-gray-500 mt-4 italic px-2">
             {stats.diferenciaEfectivo >= 0
-              ? `Quédate con todo tu efectivo (${stats.totalEfectivo.toFixed(2)}${currency}) y reclama la diferencia.`
-              : `De tus ${stats.totalEfectivo.toFixed(2)}${currency} en efectivo, quédate con tu parte y entrega el sobrante.`}
+              ? `Quédate con todo tu efectivo (${stats.totalEfectivo}${currency}) y reclama la diferencia.`
+              : `De tus ${stats.totalEfectivo}${currency} en efectivo, quédate con tu parte y entrega el sobrante.`}
           </p>
         </div>
       )}

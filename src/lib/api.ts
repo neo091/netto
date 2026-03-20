@@ -11,11 +11,13 @@ import { supabase } from "./supabase"
  * @param percentage - Porcentaje de ganancia neta (default 40%)
  */
 
+
 export const getHistory = async (
   userId: string,
   page: number,
   itemsPerPage: number,
   dateLimit: string | null,
+  percentage: number
 ) => {
   const from = page * itemsPerPage
   const to = from + itemsPerPage - 1
@@ -36,17 +38,29 @@ export const getHistory = async (
 
   if (dateLimit) totalQuery = totalQuery.gte("created_at", dateLimit)
 
-  const [resList, resTotal] = await Promise.all([query, totalQuery])
+  const [resList, statsRes] = await Promise.all([query, supabase.rpc("get_history_stats", {
+    user_id_param: userId,
+    date_limit_param: dateLimit,
+    percentage_param: percentage,
+  })])
 
+  if (resList.error) throw resList.error
+  if (statsRes.error) throw statsRes.error
 
   return {
     list: resList.data || [],
-    total: resTotal.data || [],
     count: resList.count || 0,
+    stats: statsRes.data ?? {
+      totalBruto: 0,
+      totalTarjeta: 0,
+      totalEfectivo: 0,
+      gananciaNeta: 0,
+      diferenciaEfectivo: 0,
+    },
   }
 }
 
-export const deleteHistoryRecord = async (recordId: string, userId: string) => {
+export const deleteHistory = async (recordId: string, userId: string) => {
   const { error } = await supabase
     .from("history")
     .delete()
