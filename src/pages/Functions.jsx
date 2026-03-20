@@ -90,6 +90,12 @@ const Functions = () => {
       setTimeout(() => setStatus('idle'), 3000);
     } else {
       console.log("error al enviar")
+      setStatus("error")
+      setFeedback("")
+      toast.error("feedback no enviado!", {
+        style: { background: '#111827', color: '#FFFFFF', border: '1px solid #10b981' },
+      })
+      setTimeout(() => setStatus('idle'), 3000);
     }
   }
 

@@ -13,9 +13,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api-n8n': {
-        target: 'http://n8n-n8n-58fc88-194-26-100-153.traefik.me',
+        target: 'https://n8n.paginaweb.pro',
         changeOrigin: true,
-        secure: false, // <--- AÑADE ESTO para evitar errores de certificado SSL en local
         rewrite: (path) => path.replace(/^\/api-n8n/, '')
       },
       "/sheets": {
