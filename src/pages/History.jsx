@@ -1,9 +1,5 @@
 import Footer from "../components/Footer"
 import Header from "../components/Header"
-import ExportToCVSButton from "../components/ExportCVSButton"
-import Paginador from "../components/Paginador"
-import SkeletonHistoryItem from "../components/SkeletonHistoryItem"
-import HistoryList from "../components/HistoryList"
 import Layout from "../layouts/Layout"
 import FilterSection from "../components/history/FilterSection"
 import SummarySection from "../components/history/SummarySection"
@@ -12,6 +8,7 @@ import { useConfig } from "../context/config/useConfig"
 import HistoryHeader from "../components/history/HistoryHeader"
 import HistoryContent from "../components/history/HistoryContent"
 import HistoryPagination from "../components/history/HistoryPagination"
+import LoadMoreTrigger from "../components/history/LoadMoreTrigger"
 
 const History = () => {
 
@@ -33,7 +30,12 @@ const History = () => {
             historyList={history.historyList}
             loading={history.loading}
           />
-          <HistoryPagination {...history} />
+          <LoadMoreTrigger
+            fetchNextPage={history.fetchNextPage}
+            hasNextPage={history.hasNextPage} />
+
+          {history.isFetchingNextPage && <p>Cargando más...</p>}
+          {/*<HistoryPagination {...history} />*/}
         </div>
         <Footer />
       </Layout>
