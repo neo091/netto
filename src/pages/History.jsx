@@ -1,267 +1,41 @@
-import { useEffect, useState } from "react"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
-import Swal from "sweetalert2"
-import { useAuth } from "../context/auth/useAuth"
 import ExportToCVSButton from "../components/ExportCVSButton"
 import Paginador from "../components/Paginador"
 import SkeletonHistoryItem from "../components/SkeletonHistoryItem"
-import { useConfig } from "../context/config/useConfig"
 import HistoryList from "../components/HistoryList"
 import Layout from "../layouts/Layout"
-import { getDateRange } from "../lib/util"
-import { deleteHistoryRecord, fetchHistoryData } from "../lib/api"
-
-const ITEMS_PER_PAGE = 10
+import FilterSection from "../components/history/FilterSection"
+import SummarySection from "../components/history/SummarySection"
+import { useHistory } from "../hooks/useHistory"
+import { useConfig } from "../context/config/useConfig"
+import HistoryHeader from "../components/history/HistoryHeader"
+import HistoryContent from "../components/history/HistoryContent"
+import HistoryPagination from "../components/history/HistoryPagination"
 
 const History = () => {
-  const [historyList, setHistoryList] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(0)
-  const [totalCount, setTotalCount] = useState(0)
-  const [filter, setFilter] = useState("today") // "all", "today", "week", "month"
-  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
-  const { user } = useAuth()
-  const { currency, percentage } = useConfig()
 
-  const [stats, setStats] = useState({
-    totalBruto: 0,
-    totalTarjeta: 0,
-    totalEfectivo: 0,
-    gananciaNeta: 0,
-    diferenciaEfectivo: 0,
-  })
+  const { currency } = useConfig()
 
-  const [showSummary, setShowSummary] = useState(false)
-
-  const loadHistory = async () => {
-    setLoading(true)
-    try {
-      const dateLimit = getDateRange(filter)
-
-      const result = await fetchHistoryData(
-        user.id,
-        page,
-        itemsPerPage,
-        dateLimit,
-        percentage
-      )
-
-      setHistoryList(result.history)
-      setTotalCount(result.count)
-      setStats(result.stats)
-    } catch (error) {
-      Swal.fire("Error", "No se pudo cargando historial", "error")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadHistory()
-  }, [user.id, page, filter, itemsPerPage])
-
-
-
-  const handleDelete = (tripId) => {
-    Swal.fire({
-      title: "¿Eliminar registro?",
-      text: "Esta acción no se puede deshacer",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#10b981",
-      cancelButtonColor: "#374151",
-      confirmButtonText: "Sí, borrar",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteHistoryRecord(tripId, user.id)
-          loadHistory()
-
-          Swal.fire({
-            title: "Borrado",
-            icon: "success",
-            timer: 1500,
-            showConfirmButton: false,
-          })
-        } catch (error) {
-          Swal.fire("Error", "No se pudo eliminar el registro", "error")
-        }
-      }
-    })
-  }
-
-  const totalPages = Math.ceil(totalCount / itemsPerPage)
+  const history = useHistory()
 
   return (
     <>
       <Layout>
-        <main className="bg-gray-900 min-h-screen flex flex-col">
-          <Header backspace />
-
-          <section className="flex-1 p-4 max-w-md mx-auto w-full">
-            <button
-              onClick={() => setShowSummary(!showSummary)}
-              className="w-full mb-4 bg-gray-800 border border-gray-700 p-4 rounded-2xl flex justify-between items-center active:scale-95 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="bg-green-500/10 p-2 rounded-lg">💰</div>
-                <div className="text-left">
-                  <p className="text-[10px] text-gray-500 uppercase font-bold">
-                    Ganancia {filter} (40%)
-                  </p>
-                  <p className="text-xl font-black text-white">
-                    {stats.gananciaNeta.toFixed(2)}
-                    {currency}
-                  </p>
-                </div>
-              </div>
-              <span
-                className={`text-gray-500 transition-transform ${showSummary ? "rotate-180" : ""}`}
-              >
-                ▼
-              </span>
-            </button>
-
-            {showSummary && (
-              <div className="bg-gray-800/80 border border-gray-700 rounded-3xl p-6 mb-6 shadow-2xl">
-                {/* GANANCIA REAL (TU 40%) */}
-                <div className="text-center mb-6 pb-6 border-b border-gray-700/50">
-                  <p className="text-green-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
-                    Tu Ganancia Neta ({percentage}%)
-                  </p>
-                  <p className="text-4xl font-black text-white">
-                    {stats.gananciaNeta.toFixed(2)}
-                    <span className="text-xl ml-1 text-green-500">
-                      {currency}
-                    </span>
-                  </p>
-                  <p className="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">
-                    Sobre un bruto de {stats.totalBruto.toFixed(2)}
-                    {currency}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                  <div className="bg-gray-900/50 p-3 rounded-2xl border border-gray-700">
-                    <p className="text-gray-500 text-[10px] uppercase font-bold mb-1">
-                      En Tarjeta
-                    </p>
-                    <p className="font-bold text-blue-400">
-                      {stats.totalTarjeta.toFixed(2)}
-                      {currency}
-                    </p>
-                  </div>
-                  <div className="bg-gray-900/50 p-3 rounded-2xl border border-gray-700">
-                    <p className="text-gray-500 text-[10px] uppercase font-bold mb-1">
-                      En Efectivo
-                    </p>
-                    <p className="font-bold text-green-400">
-                      {stats.totalEfectivo.toFixed(2)}
-                      {currency}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={`p-4 rounded-2xl flex justify-between items-center ${stats.diferenciaEfectivo >= 0
-                    ? "bg-green-500/10 border border-green-500/20" // Caso: Te falta cobrar
-                    : "bg-red-500/10 border border-red-500/20" // Caso: Debes entregar
-                    }`}
-                >
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-tighter text-gray-400">
-                      {stats.diferenciaEfectivo >= 0
-                        ? "La empresa te debe abonar:"
-                        : "Debes entregar a la empresa:"}
-                    </p>
-                    <p
-                      className={`text-xl font-black ${stats.diferenciaEfectivo >= 0
-                        ? "text-green-500"
-                        : "text-red-500"
-                        }`}
-                    >
-                      {Math.abs(stats.diferenciaEfectivo).toFixed(2)} {currency}
-                    </p>
-                  </div>
-                  <div className="text-2xl">
-                    {stats.diferenciaEfectivo >= 0 ? "💰" : "📉"}
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-center text-gray-500 mt-4 italic px-2">
-                  {stats.diferenciaEfectivo >= 0
-                    ? `Quédate con todo tu efectivo (${stats.totalEfectivo.toFixed(2)}${currency}) y reclama la diferencia.`
-                    : `De tus ${stats.totalEfectivo.toFixed(2)}${currency} en efectivo, quédate con tu parte y entrega el sobrante.`}
-                </p>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-white text-xl font-bold">Historial</h2>
-              <ExportToCVSButton filter={filter} historyList={historyList} />
-            </div>
-
-
-
-            <div className="flex gap-2 px-4 py-2 overflow-x-auto bg-gray-900 no-scrollbar">
-              {[
-                { id: "today", label: "Hoy" },
-                { id: "week", label: "Semana" },
-                { id: "month", label: "Mes" },
-                { id: "all", label: "Todo" },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => {
-                    setPage(0)
-                    setFilter(f.id)
-                  }}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${filter === f.id
-                    ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
-                    : "bg-gray-800 text-gray-400 border border-gray-700"
-                    }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="space-y-4 min-h-[400px]">
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonHistoryItem key={i} />
-                ))
-              ) : historyList.length === 0 ? (
-                <div className="text-center text-gray-500 py-20 bg-gray-800/20 rounded-3xl border border-dashed border-gray-700">
-                  <p>No hay viajes registrados</p>
-                </div>
-              ) : (
-                <HistoryList
-                  historyList={historyList}
-                  handleDelete={handleDelete}
-                  currency={currency}
-                />
-              )}
-            </div>
-
-            {/* Paginador Mejorado */}
-            {!loading && totalCount > itemsPerPage && (
-              <Paginador
-                page={page}
-                totalPages={totalPages}
-                prevPage={() => {
-                  setPage((p) => p - 1)
-                }}
-                nextPage={() => {
-                  setPage((p) => p + 1)
-                }}
-              />
-            )}
-          </section>
-
-          <Footer />
-        </main>
+        <Header backspace />
+        <div className="flex-1 flex flex-col gap-2 py-2">
+          <SummarySection stats={history.stats} filter={history.filter} />
+          <HistoryHeader filter={history.filter} historyList={history.historyList} />
+          <FilterSection onChange={history.changeFilter} filter={history.filter} />
+          <HistoryContent
+            currency={currency}
+            handleDelete={history.handleDelete}
+            historyList={history.historyList}
+            loading={history.loading}
+          />
+          <HistoryPagination {...history} />
+        </div>
+        <Footer />
       </Layout>
     </>
   )
