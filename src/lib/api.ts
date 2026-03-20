@@ -1,4 +1,3 @@
-import { HistoryItemType } from "../components/HistoryItem"
 import { N8N_API_BASE } from "./env"
 import { supabase } from "./supabase"
 
@@ -12,12 +11,11 @@ import { supabase } from "./supabase"
  * @param percentage - Porcentaje de ganancia neta (default 40%)
  */
 
-export const fetchHistoryData = async (
+export const getHistory = async (
   userId: string,
   page: number,
   itemsPerPage: number,
   dateLimit: string | null,
-  percentage: number = 40,
 ) => {
   const from = page * itemsPerPage
   const to = from + itemsPerPage - 1
@@ -40,37 +38,11 @@ export const fetchHistoryData = async (
 
   const [resList, resTotal] = await Promise.all([query, totalQuery])
 
-  if (resList.error) throw resList.error
-  if (resTotal.error) throw resTotal.error
-
-  const data = resTotal.data || []
-
-  const bruto = data.reduce(
-    (acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0),
-    0,
-  )
-
-  const tarjeta = data
-    .filter((i: HistoryItemType) => i.paymethod === "CARD")
-    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
-
-  const efectivo = data
-    .filter((i: HistoryItemType) => i.paymethod === "CASH")
-    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
-
-  const gananciaNeta = (bruto * percentage) / 100
-  const diferenciaEfectivo = gananciaNeta - efectivo
 
   return {
-    history: resList.data,
-    count: resList.count,
-    stats: {
-      totalBruto: bruto,
-      totalTarjeta: tarjeta,
-      totalEfectivo: efectivo,
-      gananciaNeta,
-      diferenciaEfectivo,
-    },
+    list: resList.data || [],
+    total: resTotal.data || [],
+    count: resList.count || 0,
   }
 }
 

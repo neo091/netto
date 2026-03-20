@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
-import { getDateRange } from "../lib/util"
+import { useEffect, useMemo, useState } from "react"
+import { calculateStats, getDateRange } from "../lib/util"
 import Swal from "sweetalert2"
-import { deleteHistoryRecord, fetchHistoryData } from "../lib/api"
+import * as historyApi from "../lib/api"
 import { useConfig } from "../context/config/useConfig"
 import { useAuth } from "../context/auth/useAuth"
 
@@ -34,20 +34,21 @@ export const useHistory = () => {
     try {
       const dateLimit = getDateRange(filter)
 
-      const result = await fetchHistoryData(
+      const result = await historyApi.getHistory(
         user.id,
         page,
         itemsPerPage,
-        dateLimit,
-        percentage
+        dateLimit
       )
 
-      setHistoryList(result.history)
+      setHistoryList(result.list)
       setTotalCount(result.count)
-      setStats(result.stats)
+      const stats = calculateStats(result.total, percentage)
+      setStats(stats)
+
     } catch (error) {
       console.log(error)
-      Swal.fire("Error", "No se pudo cargando historial", "error")
+      //Swal.fire("Error", "No se pudo cargando historial", "error")
     } finally {
       setLoading(false)
     }
@@ -70,7 +71,7 @@ export const useHistory = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteHistoryRecord(tripId, user.id)
+          await historyApi.deleteHistoryRecord(tripId, user.id)
           loadHistory()
 
           Swal.fire({
@@ -93,7 +94,9 @@ export const useHistory = () => {
     loadHistory()
   }, [user.id, page, filter, itemsPerPage])
 
-  const totalPages = Math.ceil(totalCount / itemsPerPage)
+  const totalPages = useMemo(() => {
+    Math.ceil(totalCount / itemsPerPage)
+  }, [totalCount, itemsPerPage])
 
 
   return { prevPage, nextPage, changeFilter, stats, filter, setFilter, historyList, loading, handleDelete, totalCount, itemsPerPage, setPage, page, totalPages }

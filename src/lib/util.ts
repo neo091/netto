@@ -1,3 +1,5 @@
+import { HistoryItemType } from "../types/history";
+
 type Trip = {
   created_at: string
   amount: string
@@ -78,3 +80,31 @@ export const calculateSettlement = (
   // Redondeo a 2 decimales para evitar 0.30000000000000004
   return Math.round(balance * 100) / 100;
 };
+
+
+export const calculateStats = (data: HistoryItemType[], percentage: number) => {
+
+  const bruto = data.reduce(
+    (acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0),
+    0,
+  )
+
+  const tarjeta = data
+    .filter((i: HistoryItemType) => i.paymethod === "CARD")
+    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
+
+  const efectivo = data
+    .filter((i: HistoryItemType) => i.paymethod === "CASH")
+    .reduce((acc: number, item: HistoryItemType) => acc + (parseFloat(item.amount) || 0), 0)
+
+  const gananciaNeta = (bruto * percentage) / 100
+  const diferenciaEfectivo = gananciaNeta - efectivo
+
+  return {
+    totalBruto: bruto,
+    totalTarjeta: tarjeta,
+    totalEfectivo: efectivo,
+    gananciaNeta,
+    diferenciaEfectivo
+  }
+}

@@ -1,13 +1,5 @@
 import { IconsTrash } from "../assets/Icons";
-import { useConfig } from "../context/config/useConfig";
-
-export type HistoryItemType = {
-  created_at: string;
-  amount: string;
-  paymethod: string;
-  duration: string;
-  id: string;
-};
+import { HistoryItemType } from "../types/history";
 
 interface HistoryItemProps {
   item: HistoryItemType;
