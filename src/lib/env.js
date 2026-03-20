@@ -1,1 +1,1 @@
-export const SHEETBEST_URL = import.meta.env.VITE_SHEETBEST_URL
+export const SHEETBEST_URL = import.meta.env.VITE_SHEETBEST_BASE

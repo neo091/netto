@@ -92,7 +92,7 @@ export const sendFeedback = async ({ feedback }: { feedback: string }) => {
   const timeoutId = setTimeout(() => controller.abort(), 6000);
 
   try {
-    const response = await fetch(SHEETBEST_URL, {
+    const response = await fetch(`${SHEETBEST_URL}/sheets/e31fd0f5-59d1-4868-ab12-ebe2a01df0c6`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
