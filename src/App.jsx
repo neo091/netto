@@ -13,6 +13,7 @@ import Config from "./pages/Config"
 import SignUp from "./pages/SignUp"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
+import AuthCallback from "./pages/AuthCallback"
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/Functions" element={<Functions />} />
           <Route path="/SignUp" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route
             path="/config"
             element={

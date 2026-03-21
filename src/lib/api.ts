@@ -1,6 +1,6 @@
-import { N8N_API_BASE } from "./env"
-import { supabase } from "./supabase"
-
+import { User } from "@supabase/supabase-js";
+import { N8N_API_BASE } from "./env";
+import { supabase } from "./supabase";
 
 /**
  * Obtiene los registros de actividad y calcula las métricas de liquidación.
@@ -11,41 +11,40 @@ import { supabase } from "./supabase"
  * @param percentage - Porcentaje de ganancia neta (default 40%)
  */
 
-
 export const getHistory = async (
   userId: string,
   page: number,
   itemsPerPage: number,
   dateLimit: string | null,
-  percentage: number
+  percentage: number,
 ) => {
-  const from = page * itemsPerPage
-  const to = from + itemsPerPage - 1
+  const from = page * itemsPerPage;
+  const to = from + itemsPerPage - 1;
 
   let query = supabase
     .from("history")
     .select("*", { count: "exact" })
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .range(from, to)
+    .range(from, to);
 
-  if (dateLimit) query = query.gte("created_at", dateLimit)
+  if (dateLimit) query = query.gte("created_at", dateLimit);
 
-  let totalQuery = supabase
-    .from("history")
-    .select("*")
-    .eq("user_id", userId)
+  let totalQuery = supabase.from("history").select("*").eq("user_id", userId);
 
-  if (dateLimit) totalQuery = totalQuery.gte("created_at", dateLimit)
+  if (dateLimit) totalQuery = totalQuery.gte("created_at", dateLimit);
 
-  const [resList, statsRes] = await Promise.all([query, supabase.rpc("get_history_stats", {
-    user_id_param: userId,
-    date_limit_param: dateLimit,
-    percentage_param: percentage,
-  })])
+  const [resList, statsRes] = await Promise.all([
+    query,
+    supabase.rpc("get_history_stats", {
+      user_id_param: userId,
+      date_limit_param: dateLimit,
+      percentage_param: percentage,
+    }),
+  ]);
 
-  if (resList.error) throw resList.error
-  if (statsRes.error) throw statsRes.error
+  if (resList.error) throw resList.error;
+  if (statsRes.error) throw statsRes.error;
 
   return {
     list: resList.data || [],
@@ -57,66 +56,86 @@ export const getHistory = async (
       gananciaNeta: 0,
       diferenciaEfectivo: 0,
     },
-  }
-}
+  };
+};
 
 export const deleteHistory = async (recordId: string, userId: string) => {
   const { error } = await supabase
     .from("history")
     .delete()
     .eq("id", recordId)
-    .eq("user_id", userId)
-  if (error) throw error
-}
+    .eq("user_id", userId);
+  if (error) throw error;
+};
 
 export const sendFeedback = async ({ feedback }: { feedback: string }) => {
-  const cleanFeedback = feedback
-    .replace(/<[^>]*>?/gm, '')
-    .trim();
+  const cleanFeedback = feedback.replace(/<[^>]*>?/gm, "").trim();
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 6000);
 
   try {
-    const response = await fetch(`${N8N_API_BASE}/webhook/aae9cdbd-3b51-4e4c-95d0-5ef814b38796`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+    const response = await fetch(
+      `${N8N_API_BASE}/webhook/aae9cdbd-3b51-4e4c-95d0-5ef814b38796`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          feedback: cleanFeedback,
+          name: "Usuario Beta",
+          timestamp: new Date().toISOString(),
+          //metadata: {
+          //  user: "Usuario Beta",
+          //  page: window.location.pathname,
+          //  timestamp: new Date().toISOString(),
+          //  browser: navigator.userAgent.split(') ')[1]
+          //}
+        }),
+        signal: controller.signal,
       },
-      body: JSON.stringify({
-        feedback: cleanFeedback,
-        name: "Usuario Beta",
-        timestamp: new Date().toISOString(),
-        //metadata: {
-        //  user: "Usuario Beta",
-        //  page: window.location.pathname,
-        //  timestamp: new Date().toISOString(),
-        //  browser: navigator.userAgent.split(') ')[1]
-        //}
-      }),
-      signal: controller.signal
-    });
+    );
 
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `Server error: ${response.status}`);
     }
 
     return { success: true, message: "feedback send!" };
-
   } catch (error: any) {
     clearTimeout(timeoutId);
 
-    if (error.name === 'AbortError') {
+    if (error.name === "AbortError") {
       console.error("Feedback error: Timeout excedido");
-      return { success: false, error: "El servidor tardó demasiado en responder." };
+      return {
+        success: false,
+        error: "El servidor tardó demasiado en responder.",
+      };
     }
 
     console.error("Feedback error:", error.message);
     return { success: false, error: "No se pudo enviar el feedback." };
   }
+};
+
+export const fetchUserProfile = async (user: User) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("first_name")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Error trayendo perfil:", error.message);
+    return { id: user.id };
+  }
+
+  return {
+    id: user.id,
+    ...data,
+  };
 };

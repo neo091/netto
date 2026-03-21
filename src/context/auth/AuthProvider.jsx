@@ -2,6 +2,8 @@ import { useEffect, useReducer } from "react"
 import { AuthContext } from "./AuthContext"
 import { authReducer } from "./AuthReducer"
 import { loginService, logoutService } from "../../services/auth"
+import { supabase } from "../../lib/supabase"
+import { fetchUserProfile } from "../../lib/api"
 
 // Estado inicial por defecto
 const initialState = {
@@ -23,22 +25,15 @@ export const AuthProvider = ({ children }) => {
 
       if (error) {
         dispatch({ type: "LOGOUT" })
-        // LANZAMOS el error para que el componente lo reciba
         throw new Error(error.message || "Credenciales incorrectas")
       }
 
-      const userData = {
-        id: user.id,
-        ...user.user_metadata,
-      }
+      const userData = await fetchUserProfile(user)
 
       dispatch({ type: "LOGIN_SUCCESS", payload: userData })
-
-      // Devolvemos los datos para confirmar éxito al componente
       return userData
     } catch (error) {
       console.error("error en context:", error.message)
-      // RE-LANZAMOS el error hacia el componente
       throw error
     }
   }
@@ -59,6 +54,44 @@ export const AuthProvider = ({ children }) => {
       JSON.stringify({ user: state.user, loading: state.loading }),
     )
   }, [state.user])
+
+  useEffect(() => {
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        const user = data.session.user
+
+        const userData = {
+          id: user.id,
+          ...user.user_metadata,
+        }
+
+        dispatch({ type: "LOGIN_SUCCESS", payload: userData })
+
+      }
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          const user = session.user
+
+          const userData = await fetchUserProfile(user)
+
+          dispatch({ type: "LOGIN_SUCCESS", payload: userData })
+
+        }
+
+        if (event === "SIGNED_OUT") {
+          dispatch({ type: "LOGOUT" })
+        }
+      }
+    )
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
 
   return (
     <AuthContext.Provider

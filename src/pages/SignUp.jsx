@@ -7,8 +7,31 @@ import CenterContentLayout from "../layouts/CenterContentLayout";
 const SignUp = () => {
   const [email, setEmail] = useState("");
 
+  const createAccount = async () => {
+    const response = await fetch(`http://test1.marcosdev.paginaweb.pro/webhook/aaed00fa-237f-4b1f-9d59-d4415deccdec`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email
+      })
+    })
+
+    const json = response.json()
+    if (response.ok) {
+      toast.success("enviado!")
+    }
+
+    console.log(json)
+
+  }
+
   const handleRequestAccess = (e) => {
     e.preventDefault();
+
+    createAccount()
+
 
     // Aquí simulamos el envío o podrías conectarlo a una tabla 'leads' en Supabase
     toast.success("Solicitud enviada. Te contactaremos pronto.", {
