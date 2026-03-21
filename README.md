@@ -4,11 +4,11 @@
 
 ### Optimiza tu jornada, controla tus ganancias.
 
-[![Desplegado en CubePath](https://img.shields.io/badge/Desplegado%20en-CubePath-00C853?style=for-the-badge&logo=cloud&logoColor=white)](TU_URL_DE_CUBEPATH_AQUI)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](#)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](#)
+[![Desplegado en CubePath](https://img.shields.io/badge/Desplegado%20en-CubePath-00C853?style=for-the-badge&logo=cloud&logoColor=white)](https://cubepath.com)
+[![VITE](https://img.shields.io/badge/Vite-FFF?style=for-the-badge&logo=vite&logoColor=#3e63dd)](https://vite.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
-[🚀 Ver Demo en Vivo](TU_URL_DE_CUBEPATH_AQUI) | [📂 Repositorio](https://github.com/neo091/netto)
+[🚀 Ver Demo en Vivo](https://netto.paginaweb.pro/) | [📂 Repositorio](https://github.com/neo091/netto)
 
 </div>
 
