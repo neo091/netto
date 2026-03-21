@@ -4,7 +4,7 @@ import Swal from "sweetalert2"
 import * as historyApi from "../lib/api"
 import { useConfig } from "../context/config/useConfig"
 import { useAuth } from "../context/auth/useAuth"
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 export const useHistory = () => {
