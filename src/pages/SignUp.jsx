@@ -8,7 +8,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
 
   const createAccount = async () => {
-    const response = await fetch(`http://test1.marcosdev.paginaweb.pro/webhook/aaed00fa-237f-4b1f-9d59-d4415deccdec`, {
+    const response = await fetch(`https://test1.marcosdev.paginaweb.pro/webhook/aaed00fa-237f-4b1f-9d59-d4415deccdec`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
