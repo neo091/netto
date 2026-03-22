@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/auth/useAuth'
+import Swal from 'sweetalert2'
+import { toast } from 'sonner'
 
 function LoginFormSection() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login } = useAuth()
-  const navigate = useNavigate()
 
   const loginHandle = async (e) => {
     e.preventDefault()
@@ -15,32 +16,15 @@ function LoginFormSection() {
     const newPassword = password.trim()
 
     if (!newUsername || !newPassword) {
-      Swal.fire({
-        icon: "error",
-        title: "Cuidado!",
-        text: "Email y contraseña son obligatorios",
-        background: "#1f2937",
-        color: "#fff",
-        confirmButtonColor: "#4ade80",
-      })
+      toast.error("Email y contraseña son obligatorios")
       return
     }
 
     try {
-      const success = await login({ email: newUsername, password: newPassword })
-
-      if (success) {
-        navigate("/")
-      }
+      await login({ email: newUsername, password: newPassword })
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error de acceso",
-        text: "Verifica tu correo y contraseña.",
-        background: "#1f2937",
-        color: "#fff",
-        confirmButtonColor: "#ef4444",
-      })
+      console.log(error.message)
+      toast.error(error.message)
     }
   }
 
@@ -82,16 +66,15 @@ function LoginFormSection() {
         </div>
 
         <button
-          type="submint"
+          type="submit"
           className="rounded-2xl p-4 bg-green-500 text-black font-bold text-lg hover:bg-green-400 transition-colors shadow-lg shadow-green-500/20 mt-2"
-          onClick={loginHandle}
         >
           Entrar al Turno
         </button>
 
         <div className="text-center">
           <Link
-            to="/"
+            to="/auth/reset-password"
             className="text-gray-500 text-sm hover:text-white transition-colors"
           >
             ¿Olvidaste tu contraseña?

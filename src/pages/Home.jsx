@@ -8,9 +8,7 @@ import { useAuth } from "../context/auth/useAuth"
 import Layout from "../layouts/Layout"
 
 const Home = () => {
-  const { user, loading } = useAuth()
-
-  if (loading) return <Loader />
+  const { user } = useAuth()
 
   if (!user) return <HomeSection />
 

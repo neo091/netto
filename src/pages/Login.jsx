@@ -1,17 +1,21 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/auth/useAuth"
 import PageTitle from "../components/PageTitle"
-import LoggedSection from "../components/features/LoggedSection"
 import LoginFormSection from "../components/features/LoginFormSection"
 import CenterContentLayout from "../layouts/CenterContentLayout"
-
+import { useEffect } from "react"
 
 const Login = () => {
 
+  const navigate = useNavigate()
   const { user } = useAuth()
-  if (user) {
-    return (<LoggedSection />)
-  }
+
+  useEffect(() => {
+
+    if (user) {
+      navigate("/", { replace: true })
+    }
+  }, [user])
 
   return (
     <CenterContentLayout>

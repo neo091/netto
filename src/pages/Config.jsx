@@ -4,6 +4,7 @@ import PercentageSection from "../components/features/PercentageSection"
 import WhatsAppConfigSection from "../components/features/WhatsAppConfigSection"
 import ComingSoonSection from "../components/ComingSoonSection"
 import NavSection from "../components/NavSection"
+import { Link } from "react-router-dom"
 
 const Config = () => {
 
@@ -19,6 +20,14 @@ const Config = () => {
         <PercentageSection />
         <WhatsAppConfigSection />
         <ComingSoonSection />
+
+        {/* BOTÓN CERRAR SESIÓN */}
+        <Link
+          to={"/auth/new-password"}
+          className="bg-gray-800/50 border border-gray-700 rounded-3xl py-2 px-4 text-white font-bold text-center hover:opacity-50 transition-all"
+        >
+          Cambiar contraseña
+        </Link>
 
         {/* BOTÓN CERRAR SESIÓN */}
         <button

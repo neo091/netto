@@ -14,8 +14,17 @@ import SignUp from "./pages/SignUp"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import AuthCallback from "./pages/AuthCallback"
+import ResetPassword from "./pages/ResetPassword"
+import NewPassword from "./pages/NewPassword"
+import { useAuth } from "./context/auth/useAuth"
+import Loader from "./components/Loader"
 
 function App() {
+
+  const { loading } = useAuth()
+
+  if (loading) return <Loader />
+
   return (
     <>
       <Router>
@@ -25,6 +34,8 @@ function App() {
           <Route path="/SignUp" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/new-password" element={<NewPassword />} />
           <Route
             path="/config"
             element={

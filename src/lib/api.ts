@@ -122,7 +122,7 @@ export const sendFeedback = async ({ feedback }: { feedback: string }) => {
   }
 };
 
-export const fetchUserProfile = async (user: User) => {
+export const fetchUserProfile = async (user: any) => {
   const { data, error } = await supabase
     .from("profiles")
     .select("first_name")
