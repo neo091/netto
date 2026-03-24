@@ -76,8 +76,8 @@ Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha
 
 [Acceder](https://netto.paginaweb.pro/login)
 
-[!NOTE]
-Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
+> [!NOTE]
+> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
 
 ---
 
