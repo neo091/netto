@@ -45,7 +45,7 @@ En el sector del taxi, el conductor suele trabajar bajo una comisión (comúnmen
 1. **Clona el repositorio**:
 
 ```bash
-git clone [https://github.com/neo091/netto.git](https://github.com/neo091/netto.git)
+git clone git@github.com:neo091/netto.git
 cd netto
 ```
 
