@@ -87,12 +87,10 @@ export const sendFeedback = async ({ feedback }: { feedback: string }) => {
           feedback: cleanFeedback,
           name: "Usuario Beta",
           timestamp: new Date().toISOString(),
-          //metadata: {
-          //  user: "Usuario Beta",
-          //  page: window.location.pathname,
-          //  timestamp: new Date().toISOString(),
-          //  browser: navigator.userAgent.split(') ')[1]
-          //}
+          metadata: {
+            page: window.location.pathname,
+            userAgent: navigator.userAgent,
+          },
         }),
         signal: controller.signal,
       },

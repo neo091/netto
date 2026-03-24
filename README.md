@@ -40,47 +40,6 @@ En el sector del taxi, el conductor suele trabajar bajo una comisión (comúnmen
 
 ---
 
-## ⚙️ Implementación Técnica
-
-### Stack Tecnológico
-
-- **Frontend**: React 18 con Vite.
-- **Estilos**: Tailwind CSS con animaciones personalizadas.
-- **Base de Datos & Auth**: Supabase.
-- **Estado Global**: React Context + `useReducer`.
-- **Testing**: Vitest para la lógica de liquidación.
-- **Notificaciones**: Sonner para feedback en tiempo real.
-
-### Arquitectura de Datos
-
-El proyecto utiliza una capa de API centralizada en `lib/api.ts` para interactuar con Supabase, asegurando que la lógica de negocio esté separada de la interfaz de usuario.
-
----
-
-## ☁️ Uso de CubePath
-
-Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalable para aplicaciones modernas.
-
-- **Servidor**: Desplegado en un servidor **Nano** optimizado para React.
-- **Proceso**: Se configuró mediante el panel de CubePath para servir la build estática de Vite.
-- **Beneficio**: La baja latencia de CubePath permite que el taxista registre sus viajes al instante, incluso con conexiones móviles inestables.
-
----
-
-## 🧪 Acceso de Prueba (Modo Demo)
-
-Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
-
-**email**: test@netto.paginaweb.pro\
-**password**: B6KHJKYs8cb
-
-[Acceder](https://netto.paginaweb.pro/login)
-
-> [!NOTE]
-> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
-
----
-
 ## 🛠️ Instalación Local
 
 1. **Clona el repositorio**:
@@ -109,6 +68,70 @@ VITE_N8N_API_BASE=tu_api (yo use n8n por eso le puse ese nombre)
 ```bash
 npm run dev
 ```
+
+## ⚙️ Implementación Técnica
+
+### Stack Tecnológico & Arquitectura
+
+Netto no es solo una aplicación de frontend; es un ecosistema de microservicios diseñado para la alta disponibilidad en movilidad.
+
+- **Frontend**: React 18 con Vite.
+- **Estilos**: Tailwind CSS con diseño Glassmorphism y modo oscuro nativo.
+- **Base de Datos & Auth**: Supabase.
+- **Gestión de Estado**: React Context + useReducer (Arquitectura robusta sin dependencias pesadas).
+- **Notificaciones**: Sonner para feedback en tiempo real.
+
+### Arquitectura de Datos
+
+El proyecto utiliza una capa de API centralizada en `lib/api.ts` para interactuar con Supabase, asegurando que la lógica de negocio esté separada de la interfaz de usuario.
+
+### 🚀 Despliegue e Infraestructura (Dockploy)
+
+La aplicación se gestiona mediante una arquitectura de proyectos independientes dentro de Dockploy, optimizando recursos y escalabilidad:
+
+- **App Engine (Railpack):** El frontend de Netto se despliega mediante Railpack. Este sistema detecta automáticamente el entorno de Vite, optimizando la build de producción y sirviéndola con latencia mínima, ideal para conductores en zonas de baja cobertura.
+- **Automation Engine (n8n):** Instancia de n8n autogestionada en un proyecto paralelo de Dockploy. Actúa como el "cerebro" logístico de la aplicación.
+- **Pipeline de Datos:**
+  - **Webhooks:** n8n recibe los registros y feedbacks en tiempo real.
+  - **SheetBest API:** Conecta el flujo de n8n con Google Sheets, permitiendo una gestión administrativa transparente y ágil de la lista de espera (Beta).
+
+<div align="center">
+  <img src="/src/assets/n8n-1.png" alt="Home" width="100%" />
+</div>
+
+---
+
+## 🗄️ Backend & Persistencia
+
+- **BaaS:** Supabase (PostgreSQL) para la gestión de usuarios, autenticación y almacenamiento del historial de viajes.
+
+- **Storage:** Google Sheets (vía n8n + SheetBest) para el control administrativo de nuevos conductores.
+
+## ☁️ Uso de CubePath
+
+Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalable para aplicaciones modernas.
+
+- Baja Latencia: Crucial para el registro de viajes en milisegundos.
+
+- PWA Ready: Configuración de servidor optimizada para el registro de Service Workers.
+
+- Seguridad: Variables de entorno críticas gestionadas de forma segura desde el panel de CubePath.
+
+---
+
+## 🧪 Acceso de Prueba (Modo Demo)
+
+Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
+
+**email**: test@netto.paginaweb.pro\
+**password**: B6KHJKYs8cb
+
+[Acceder](https://netto.paginaweb.pro/login)
+
+> [!NOTE]
+> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
+
+---
 
 <div align="center">
 
