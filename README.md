@@ -67,12 +67,17 @@ Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalab
 
 ---
 
-# test user
+## 🧪 Acceso de Prueba (Modo Demo)
+
+Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
 
 **email**: test@netto.paginaweb.pro\
 **password**: B6KHJKYs8cb
 
 [Acceder](https://netto.paginaweb.pro/login)
+
+[!NOTE]
+Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
 
 ---
 
@@ -80,10 +85,8 @@ Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalab
 
 1. **Clona el repositorio**:
 
-git clone [https://github.com/neo091/netto.git](https://github.com/neo091/netto.git)
-
 ```bash
-
+git clone [https://github.com/neo091/netto.git](https://github.com/neo091/netto.git)
 cd netto
 ```
 
@@ -93,14 +96,15 @@ cd netto
 npm install
 ```
 
-3. Instala las dependencias:
+3. Configurar variables de entorno:
 
 ```env
 VITE_SUPABASE_URL=tu_url
 VITE_SUPABASE_ANON_KEY=tu_key
+VITE_N8N_API_BASE=tu_api (yo use n8n por eso le puse ese nombre)
 ```
 
-4. Instala las dependencias:
+4. Iniciar servidor de desarrollo:
 
 ```bash
 npm run dev
