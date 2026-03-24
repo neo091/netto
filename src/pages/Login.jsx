@@ -1,21 +1,19 @@
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/auth/useAuth"
-import PageTitle from "../components/PageTitle"
-import LoginFormSection from "../components/features/LoginFormSection"
-import CenterContentLayout from "../layouts/CenterContentLayout"
-import { useEffect } from "react"
+import LoginFormSection from "../components/features/LoginFormSection";
+import CenterContentLayout from "../layouts/CenterContentLayout";
+import { Link, useNavigate } from "react-router-dom";
+import PageTitle from "../components/ui/PageTitle";
+import { useAuth } from "../context/auth/useAuth";
+import { useEffect } from "react";
 
 const Login = () => {
-
-  const navigate = useNavigate()
-  const { user } = useAuth()
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-
     if (user) {
-      navigate("/", { replace: true })
+      navigate("/", { replace: true });
     }
-  }, [user])
+  }, [user]);
 
   return (
     <CenterContentLayout>
@@ -31,14 +29,14 @@ const Login = () => {
 
         <p className="text-center text-gray-500 mt-8 text-sm">
           ¿No tienes cuenta?{" "}
-          <Link to={"/SignUp"} >
-
+          <Link to={"/SignUp"}>
             <span className="text-green-500 font-bold cursor-pointer">
               Contacta con soporte
-            </span></Link>
+            </span>
+          </Link>
         </p>
       </div>
     </CenterContentLayout>
-  )
-}
-export default Login
+  );
+};
+export default Login;

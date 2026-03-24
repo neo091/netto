@@ -4,7 +4,6 @@ import { authReducer } from "./AuthReducer";
 import { supabase } from "../../lib/supabase";
 import { fetchUserProfile } from "../../lib/api";
 
-// Estado inicial por defecto
 const initialState = {
   user: null,
   error: null,
@@ -14,6 +13,15 @@ const initialState = {
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+
+  const createCleanUser = (supabaseUser, profileData) => {
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email,
+      is_test_user: supabaseUser.email === "test@netto.paginaweb.pro",
+      ...profileData,
+    };
+  };
 
   const login = async ({ email, password }) => {
     dispatch({ type: "INIT_LOGIN" });
@@ -34,20 +42,20 @@ export const AuthProvider = ({ children }) => {
     return { success: true };
   };
 
-  const handleUser = async (user) => {
+  const handleUser = async (supabaseUser) => {
     try {
-      const userData = await fetchUserProfile(user);
+      const userData = await fetchUserProfile(supabaseUser);
+      const cleanUser = createCleanUser(supabaseUser, userData);
 
       dispatch({
         type: "LOGIN_SUCCESS",
-        payload: userData || user,
+        payload: cleanUser,
       });
     } catch (err) {
       console.error("PROFILE ERROR:", err);
-
       dispatch({
         type: "LOGIN_SUCCESS",
-        payload: user,
+        payload: createCleanUser(supabaseUser, null),
       });
     }
   };
@@ -63,9 +71,18 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: "INIT_LOGIN" });
         try {
           const userData = await fetchUserProfile(data.session.user);
-          dispatch({ type: "LOGIN_SUCCESS", payload: userData });
+
+          const cleanUser = createCleanUser(data.session.user, userData);
+
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: cleanUser,
+          });
         } catch {
-          dispatch({ type: "LOGIN_SUCCESS", payload: data.session.user });
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: createCleanUser(data.session.user, null),
+          });
         }
       } else {
         dispatch({ type: "LOADED" });
@@ -80,7 +97,6 @@ export const AuthProvider = ({ children }) => {
 
         if (event === "SIGNED_IN" && session?.user) {
           dispatch({ type: "INIT_LOGIN" });
-
           handleUser(session.user);
         }
 

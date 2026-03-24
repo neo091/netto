@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/auth/useAuth";
 
 export default function useLoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); // test@netto.paginaweb.pro
+  const [password, setPassword] = useState(""); // B6KHJKYs8cb
   const [formError, setFormError] = useState(null);
   const { login, authLoading, error: loginError } = useAuth();
 

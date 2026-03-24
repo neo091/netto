@@ -4,42 +4,48 @@ import { IconChevronLeft, IconWhatsapp, IconAlert } from "../assets/Icons";
 import { toast } from "sonner";
 import CenterContentLayout from "../layouts/CenterContentLayout";
 
+const BASE_API = import.meta.env.VITE_N8N_API_BASE;
+
 const SignUp = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(null);
 
   const createAccount = async () => {
-    const response = await fetch(`https://test1.marcosdev.paginaweb.pro/webhook/aaed00fa-237f-4b1f-9d59-d4415deccdec`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email
-      })
-    })
+    setLoading(true);
+    setSuccess(null);
+    try {
+      const response = await fetch(
+        `${BASE_API}/webhook/d821c59d-8db3-4e5f-a8f6-504e33987fc3`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+          }),
+        },
+      );
 
-    const json = response.json()
-    if (response.ok) {
-      toast.success("enviado!")
+      if (response.ok) {
+        toast.success("enviado!");
+        setEmail("");
+        setSuccess(
+          "Hemos recibido tu peticion, sera procesada y te enviaremos un correo al finalizar la verificacion",
+        );
+      }
+    } catch (error) {
+      toast.error("ocurrió un error");
+    } finally {
+      setLoading(false);
     }
-
-    console.log(json)
-
-  }
+  };
 
   const handleRequestAccess = (e) => {
     e.preventDefault();
 
-    createAccount()
-
-
-    // Aquí simulamos el envío o podrías conectarlo a una tabla 'leads' en Supabase
-    toast.success("Solicitud enviada. Te contactaremos pronto.", {
-      description: "Revisaremos tu perfil de taxista para darte acceso a la beta.",
-      style: { background: '#111827', color: '#fff', border: '1px solid #10b981' }
-    });
-
-    setEmail("");
+    createAccount();
   };
 
   return (
@@ -47,7 +53,10 @@ const SignUp = () => {
       {/* Decoración de fondo (Brillo Esmeralda sutil) */}
       <div className="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
 
-      <Link to="/" className="absolute top-8 left-6 p-2 bg-gray-800 rounded-full">
+      <Link
+        to="/"
+        className="absolute top-8 left-6 p-2 bg-gray-800 rounded-full"
+      >
         <IconChevronLeft />
       </Link>
 
@@ -74,6 +83,7 @@ const SignUp = () => {
               Tu Email de contacto
             </label>
             <input
+              autoComplete="email"
               type="email"
               required
               value={email}
@@ -84,17 +94,24 @@ const SignUp = () => {
           </div>
 
           <button
+            disabled={loading}
             type="submit"
             className="w-full bg-green-500 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all active:scale-95"
           >
-            Solicitar Invitación
+            {loading ? "Solicitando..." : "Solicitar Invitación"}
           </button>
         </form>
 
         <div className="mt-12 space-y-6">
           <div className="relative">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-800"></span></div>
-            <div className="relative flex justify-center text-xs uppercase"><span className="bg-gray-900 px-2 text-gray-600 font-bold">O hablemos por</span></div>
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-800"></span>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gray-900 px-2 text-gray-600 font-bold">
+                O hablemos por
+              </span>
+            </div>
           </div>
 
           <a
@@ -102,7 +119,9 @@ const SignUp = () => {
             className="flex items-center justify-center gap-3 w-full bg-gray-800 border border-gray-700 p-4 rounded-2xl hover:bg-gray-700 transition-all"
           >
             <IconWhatsapp size={6} className="text-green-500" />
-            <span className="font-bold text-sm text-gray-300">Soporte para Conductores</span>
+            <span className="font-bold text-sm text-gray-300">
+              Soporte para Conductores
+            </span>
           </a>
         </div>
       </div>

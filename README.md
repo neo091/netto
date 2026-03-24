@@ -67,6 +67,15 @@ Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalab
 
 ---
 
+# test user
+
+**email**: test@netto.paginaweb.pro\
+**password**: B6KHJKYs8cb
+
+[Acceder](https://netto.paginaweb.pro/login)
+
+---
+
 ## 🛠️ Instalación Local
 
 1. **Clona el repositorio**:

@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
-import PageTitle from "../PageTitle";
+import PageTitle from "../ui/PageTitle";
 
 const Hero = () => {
   return (
     <header className="relative py-16 px-6 flex flex-col items-center text-center overflow-hidden">
-      {/* Efecto de luz ambiental */}
       <div className="absolute top-0 w-72 h-72 bg-green-500/10 blur-[120px] rounded-full -z-10"></div>
-
       <div className="flex items-center gap-2 bg-gray-800 text-green-400 text-xs font-bold px-4 py-1.5 rounded-full border border-green-500/20 mb-6 uppercase tracking-widest">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

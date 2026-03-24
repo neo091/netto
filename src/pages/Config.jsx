@@ -1,19 +1,19 @@
-import { useAuth } from "../context/auth/useAuth"
-import SymbolSection from "../components/features/SymbolSection"
-import PercentageSection from "../components/features/PercentageSection"
-import WhatsAppConfigSection from "../components/features/WhatsAppConfigSection"
-import ComingSoonSection from "../components/ComingSoonSection"
-import NavSection from "../components/NavSection"
-import { Link } from "react-router-dom"
+import { useAuth } from "../context/auth/useAuth";
+import SymbolSection from "../components/features/SymbolSection";
+import PercentageSection from "../components/features/PercentageSection";
+import WhatsAppConfigSection from "../components/features/WhatsAppConfigSection";
+import ComingSoonSection from "../components/ComingSoonSection";
+import NavSection from "../components/NavSection";
+import { Link } from "react-router-dom";
 
 const Config = () => {
-
-  const { logout } = useAuth()
+  const { logout, user } = useAuth();
 
   return (
     <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 fade-in">
-
       <NavSection label={"Configuración"} />
+
+      {user?.is_test_user && <p>Usuario de prueba</p>}
 
       <div className="max-w-md mx-auto flex flex-col gap-6">
         <SymbolSection />
@@ -21,13 +21,16 @@ const Config = () => {
         <WhatsAppConfigSection />
         <ComingSoonSection />
 
-        {/* BOTÓN CERRAR SESIÓN */}
-        <Link
-          to={"/auth/new-password"}
-          className="bg-gray-800/50 border border-gray-700 rounded-3xl py-2 px-4 text-white font-bold text-center hover:opacity-50 transition-all"
-        >
-          Cambiar contraseña
-        </Link>
+        {user?.is_test_user ? (
+          ""
+        ) : (
+          <Link
+            to={"/auth/new-password"}
+            className={`bg-gray-800/50 border border-gray-700 rounded-3xl py-2 px-4 text-white font-bold text-center hover:opacity-50 transition-all `}
+          >
+            Cambiar contraseña
+          </Link>
+        )}
 
         {/* BOTÓN CERRAR SESIÓN */}
         <button
@@ -38,7 +41,7 @@ const Config = () => {
         </button>
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default Config
+export default Config;

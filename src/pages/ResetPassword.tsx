@@ -4,11 +4,13 @@ import { IconAlert, IconChevronLeft, IconWhatsapp } from "../assets/Icons";
 import React, { useState, FC } from "react";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
+import { useAuth } from "../context/auth/useAuth";
 
 const ResetPassword: FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +33,21 @@ const ResetPassword: FC = () => {
       setLoading(false);
     }
   };
+
+  if (user?.is_test_user) {
+    return (
+      <CenterContentLayout>
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-8 left-6 p-2 bg-gray-800 rounded-full"
+        >
+          <IconChevronLeft />
+        </button>
+        <p>los usuarios de prueba no pueden cambiar la contraseña</p>
+      </CenterContentLayout>
+    );
+  }
 
   return (
     <CenterContentLayout>
