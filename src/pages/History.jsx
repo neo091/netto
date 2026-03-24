@@ -1,29 +1,35 @@
-import Footer from "../components/Footer"
-import Header from "../components/Header"
-import Layout from "../layouts/Layout"
-import FilterSection from "../components/history/FilterSection"
-import SummarySection from "../components/history/SummarySection"
-import { useHistory } from "../hooks/useHistory"
-import { useConfig } from "../context/config/useConfig"
-import HistoryHeader from "../components/history/HistoryHeader"
-import HistoryContent from "../components/history/HistoryContent"
-import HistoryPagination from "../components/history/HistoryPagination"
-import LoadMoreTrigger from "../components/history/LoadMoreTrigger"
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import Layout from "../layouts/Layout";
+import FilterSection from "../components/history/FilterSection";
+import SummarySection from "../components/history/SummarySection";
+import { useHistory } from "../hooks/useHistory";
+import { useConfig } from "../context/config/useConfig";
+import HistoryHeader from "../components/history/HistoryHeader";
+import HistoryContent from "../components/history/HistoryContent";
+import HistoryPagination from "../components/history/HistoryPagination";
+import LoadMoreTrigger from "../components/history/LoadMoreTrigger";
+import HeaderBlur from "../components/ui/HeaderBlur";
 
 const History = () => {
+  const { currency } = useConfig();
 
-  const { currency } = useConfig()
-
-  const history = useHistory()
+  const history = useHistory();
 
   return (
     <>
-      <Layout>
-        <Header backspace />
+      <main className="bg-gray-900 min-h-screen text-white p-6 pb-24 fade-in flex flex-col">
+        <HeaderBlur label="Historial" />
         <div className="flex-1 flex flex-col gap-2 py-2">
           <SummarySection stats={history.stats} filter={history.filter} />
-          <HistoryHeader filter={history.filter} historyList={history.historyList} />
-          <FilterSection onChange={history.changeFilter} filter={history.filter} />
+          <HistoryHeader
+            filter={history.filter}
+            historyList={history.historyList}
+          />
+          <FilterSection
+            onChange={history.changeFilter}
+            filter={history.filter}
+          />
           <HistoryContent
             currency={currency}
             handleDelete={history.handleDelete}
@@ -32,15 +38,16 @@ const History = () => {
           />
           <LoadMoreTrigger
             fetchNextPage={history.fetchNextPage}
-            hasNextPage={history.hasNextPage} />
+            hasNextPage={history.hasNextPage}
+          />
 
           {history.isFetchingNextPage && <p>Cargando más...</p>}
           {/*<HistoryPagination {...history} />*/}
         </div>
-        <Footer />
-      </Layout>
+        {/*<Footer />*/}
+      </main>
     </>
-  )
-}
+  );
+};
 
-export default History
+export default History;
