@@ -1,13 +1,9 @@
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import Layout from "../layouts/Layout";
 import FilterSection from "../components/history/FilterSection";
 import SummarySection from "../components/history/SummarySection";
 import { useHistory } from "../hooks/useHistory";
 import { useConfig } from "../context/config/useConfig";
 import HistoryHeader from "../components/history/HistoryHeader";
 import HistoryContent from "../components/history/HistoryContent";
-import HistoryPagination from "../components/history/HistoryPagination";
 import LoadMoreTrigger from "../components/history/LoadMoreTrigger";
 import HeaderBlur from "../components/ui/HeaderBlur";
 
@@ -29,6 +25,8 @@ const History = () => {
           <FilterSection
             onChange={history.changeFilter}
             filter={history.filter}
+            onRangeChange={history.setRange}
+            customRange={history.customRange}
           />
           <HistoryContent
             currency={currency}

@@ -21,7 +21,12 @@ export const useHistory = () => {
 
   const [filter, setFilter] = useState("today"); // "all", "today", "week", "month"
 
-  const dateLimit = getDateRange(filter);
+  const [customRange, setCustomRange] = useState({ start: null, end: null });
+
+  // Lógica de fechas estricta
+  const startDate =
+    filter === "range" ? customRange.start : getDateRange(filter);
+  const endDate = filter === "range" ? customRange.end : null;
 
   const {
     data,
@@ -31,14 +36,15 @@ export const useHistory = () => {
     isFetchingNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["history", user?.id, dateLimit],
+    queryKey: ["history", user?.id, filter, startDate, endDate],
     queryFn: ({ pageParam = 0 }) => {
       if (!user?.id) throw new Error("No user");
       return historyApi.getHistory(
         user.id,
         pageParam,
         itemsPerPage,
-        dateLimit,
+        startDate,
+        endDate,
         percentage,
       );
     },
@@ -54,7 +60,13 @@ export const useHistory = () => {
   });
 
   const historyList = data?.pages.flatMap((page) => page.list) ?? [];
-  const stats = data?.pages[0]?.stats || {};
+  const stats = data?.pages[0]?.stats || {
+    totalBruto: 0,
+    totalTarjeta: 0,
+    totalEfectivo: 0,
+    gananciaNeta: 0,
+    diferenciaEfectivo: 0,
+  };
   const totalCount = data?.pages[0]?.count || 0;
 
   const deleteMutation = useMutation({
@@ -117,11 +129,18 @@ export const useHistory = () => {
 
   const changeFilter = (newFilter) => setFilter(newFilter);
 
+  const setRange = (formattedStart, formattedEnd) => {
+    setCustomRange({ start: formattedStart, end: formattedEnd });
+  };
+
   return {
     historyList,
     stats,
     totalCount,
     loading: isLoading,
+
+    setRange, // Exportamos la función del calendario
+    customRange, // Exportamos el estado del calendario
 
     fetchNextPage,
     hasNextPage,

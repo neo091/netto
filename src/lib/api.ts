@@ -9,13 +9,16 @@ import { supabase } from "./supabase";
  * @param itemsPerPage - Cantidad de registros por página
  * @param dateLimit - ISO String para filtrar desde una fecha específica
  * @param percentage - Porcentaje de ganancia neta (default 40%)
+ * @param startDate - Fecha de inicio del filtro
+ * @param endDate - Fecha de fin del filtro
  */
 
 export const getHistory = async (
   userId: string,
   page: number,
   itemsPerPage: number,
-  dateLimit: string | null,
+  startDate: string | null,
+  endDate: string | null,
   percentage: number,
 ) => {
   const from = page * itemsPerPage;
@@ -28,23 +31,24 @@ export const getHistory = async (
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  if (dateLimit) query = query.gte("created_at", dateLimit);
-
-  let totalQuery = supabase.from("history").select("*").eq("user_id", userId);
-
-  if (dateLimit) totalQuery = totalQuery.gte("created_at", dateLimit);
+  if (startDate) query = query.gte("created_at", startDate);
+  if (endDate) query = query.lte("created_at", endDate);
 
   const [resList, statsRes] = await Promise.all([
     query,
-    supabase.rpc("get_history_stats", {
-      user_id_param: userId,
-      date_limit_param: dateLimit,
-      percentage_param: percentage,
-    }),
+    supabase
+      .rpc("get_history_stats", {
+        user_id_param: userId,
+        start_date_param: startDate,
+        end_date_param: endDate,
+        percentage_param: percentage,
+      })
+      .single(),
   ]);
 
   if (resList.error) throw resList.error;
-  if (statsRes.error) throw statsRes.error;
+  if (statsRes.error && statsRes.error.code !== "PGRST116")
+    throw statsRes.error;
 
   return {
     list: resList.data || [],
