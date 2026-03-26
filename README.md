@@ -12,6 +12,16 @@
 
 </div>
 
+## 🧪 Acceso de Prueba (Modo Demo)
+
+Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
+
+**email**: test@netto.paginaweb.pro\
+**password**: B6KHJKYs8cb
+
+> [!NOTE]
+> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
+
 ---
 
 ## 📝 Descripción del Proyecto
@@ -58,8 +68,6 @@ npm install
 3. Configurar variables de entorno:
 
 ```env
-VITE_SUPABASE_URL=tu_url
-VITE_SUPABASE_ANON_KEY=tu_key
 VITE_N8N_API_BASE=tu_api (yo use n8n por eso le puse ese nombre)
 ```
 
@@ -69,16 +77,67 @@ VITE_N8N_API_BASE=tu_api (yo use n8n por eso le puse ese nombre)
 npm run dev
 ```
 
+## 🗄️ Configuración de la Base de Datos (Supabase)
+
+Netto utiliza Supabase no solo como base de datos, sino como el motor de cálculo para la liquidación de los conductores. Sigue estos pasos para replicar la estructura necesaria:
+
+### 1. Crear el Proyecto
+
+- Ve a Supabase Dashboard y crea un nuevo proyecto.
+
+- Una vez creado, ve a Project Settings > API y copia tu URL y tu anon public key.
+
+- Pégalas en tu archivo .env local:
+
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=tu_url_de_supabase
+VITE_SUPABASE_ANON_KEY=tu_clave_anonima
+
+# Automation & API (n8n/SheetBest)
+VITE_N8N_API_BASE=tu_endpoint_de_n8n
+```
+
+### 2. Ejecutar el Script de Inicialización
+
+Para que la aplicación funcione, es necesario crear las tablas, las políticas de seguridad y las funciones de cálculo.
+
+- En el panel lateral de Supabase, entra en SQL Editor.
+
+- Haz clic en "New Query".
+
+- Abre el archivo supabase_setup.sql que se encuentra en la raíz de este repositorio.
+
+- Copia todo su contenido, pégalo en el editor y haz clic en Run.
+
+### 3. ¿Qué instala este script?
+
+El script configura automáticamente los tres pilares de la app:
+
+- Tablas de Datos: profiles (información del conductor) e history (registro de cada viaje).
+
+- Automatización (Trigger): Crea un perfil de usuario automáticamente en cuanto alguien nuevo se registra en la sección de Autenticación.
+
+- Cerebro Contable (get_history_stats): Una función RPC de PostgreSQL que calcula en tiempo real el balance de liquidación, aplicando el porcentaje personalizable del conductor y restando el efectivo cobrado.
+
+### 4. Seguridad (RLS)
+
+El script habilita Row Level Security (RLS) por defecto. Esto garantiza que:
+
+- Un conductor solo pueda ver sus propios viajes.
+
+- Nadie pueda leer el perfil de otro usuario sin estar autenticado.
+
 ## ⚙️ Implementación Técnica
 
 ### Stack Tecnológico & Arquitectura
 
 Netto no es solo una aplicación de frontend; es un ecosistema de microservicios diseñado para la alta disponibilidad en movilidad.
 
-- **Frontend**: React 18 con Vite.
-- **Estilos**: Tailwind CSS con diseño Glassmorphism y modo oscuro nativo.
-- **Base de Datos & Auth**: Supabase.
-- **Gestión de Estado**: React Context + useReducer (Arquitectura robusta sin dependencias pesadas).
+- 📱 **Frontend**: React 18 con Vite.
+- ⚡ **Estilos**: Tailwind CSS con diseño Glassmorphism y modo oscuro nativo.
+- 🤖 **Base de Datos & Auth**: Supabase.
+- 📊 **Gestión de Estado**: React Context + useReducer (Arquitectura robusta sin dependencias pesadas).
 - **Notificaciones**: Sonner para feedback en tiempo real.
 
 ### Arquitectura de Datos
@@ -116,20 +175,6 @@ Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalab
 - PWA Ready: Configuración de servidor optimizada para el registro de Service Workers.
 
 - Seguridad: Variables de entorno críticas gestionadas de forma segura desde el panel de CubePath.
-
----
-
-## 🧪 Acceso de Prueba (Modo Demo)
-
-Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
-
-**email**: test@netto.paginaweb.pro\
-**password**: B6KHJKYs8cb
-
-[Acceder](https://netto.paginaweb.pro/login)
-
-> [!NOTE]
-> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
 
 ---
 
