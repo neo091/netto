@@ -1,9 +1,10 @@
-import HistoryItem, { HistoryItemType } from "./HistoryItem"
+import { HistoryItemType } from "../types/history";
+import HistoryItem from "./HistoryItem";
 
 interface HistoriListProps {
-  historyList: HistoryItemType[]
-  handleDelete: (id: string) => void
-  currency: string
+  historyList: HistoryItemType[];
+  handleDelete: (id: string) => void;
+  currency: string;
 }
 
 function HistoryList({
@@ -22,7 +23,7 @@ function HistoryList({
         />
       ))}
     </div>
-  )
+  );
 }
 
-export default HistoryList
+export default HistoryList;

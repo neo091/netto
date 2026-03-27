@@ -1,5 +1,3 @@
-import { toast } from "sonner";
-import Swal from "sweetalert2";
 import { useState } from "react";
 import * as historyApi from "../lib/api";
 import { getDateRange } from "../lib/util";
@@ -22,6 +20,8 @@ export const useHistory = () => {
   const [filter, setFilter] = useState("today"); // "all", "today", "week", "month"
 
   const [customRange, setCustomRange] = useState({ start: null, end: null });
+  const [onError, setOnError] = useState(null);
+  const [onSuccess, setOnSuccess] = useState(null);
 
   // Lógica de fechas estricta
   const startDate =
@@ -72,15 +72,17 @@ export const useHistory = () => {
   const deleteMutation = useMutation({
     mutationFn: (tripId) => historyApi.deleteHistory(tripId, user.id),
     onMutate: async (tripId) => {
-      await queryClient.cancelQueries(["history", user?.id, dateLimit]);
+      setOnError(null);
+      setOnSuccess(null);
+      await queryClient.cancelQueries(["history", user?.id, startDate]);
 
       const previousData = queryClient.getQueryData([
         "history",
         user?.id,
-        dateLimit,
+        startDate,
       ]);
 
-      queryClient.setQueryData(["history", user?.id, dateLimit], (old) => {
+      queryClient.setQueryData(["history", user?.id, startDate], (old) => {
         if (!old) return old;
 
         return {
@@ -98,40 +100,19 @@ export const useHistory = () => {
     onError: (err, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
-          ["history", user?.id, dateLimit],
+          ["history", user?.id, startDate],
           context.previousData,
         );
       }
-      toast.error("error al eliminar el registro");
+
+      console.log(err);
+      setOnError("error al eliminar el registro");
     },
     onSuccess: () => {
-      toast.success("eliminado correctamente!");
+      setOnSuccess("eliminado correctamente!");
       refetch();
     },
   });
-
-  const handleDelete = async (tripId) => {
-    const result = await Swal.fire({
-      title: "¿Eliminar registro?",
-      text: "Esta acción no se puede deshacer",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#10b981",
-      cancelButtonColor: "#374151",
-      confirmButtonText: "Sí, borrar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!result.isConfirmed) return;
-
-    deleteMutation.mutate(tripId);
-  };
-
-  const changeFilter = (newFilter) => setFilter(newFilter);
-
-  const setRange = (formattedStart, formattedEnd) => {
-    setCustomRange({ start: formattedStart, end: formattedEnd });
-  };
 
   return {
     historyList,
@@ -139,8 +120,8 @@ export const useHistory = () => {
     totalCount,
     loading: isLoading,
 
-    setRange, // Exportamos la función del calendario
-    customRange, // Exportamos el estado del calendario
+    setRange: (formattedStart, formattedEnd) =>
+      setCustomRange({ start: formattedStart, end: formattedEnd }),
 
     fetchNextPage,
     hasNextPage,
@@ -151,8 +132,10 @@ export const useHistory = () => {
     goPage: (newPage) => setPage(newPage),
 
     filter,
-    changeFilter,
+    changeFilter: (newFilter) => setFilter(newFilter),
 
-    handleDelete,
+    handleDelete: (tripId) => deleteMutation.mutate(tripId),
+    onError,
+    onSuccess,
   };
 };

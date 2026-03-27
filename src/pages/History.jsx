@@ -6,11 +6,36 @@ import HistoryHeader from "../components/history/HistoryHeader";
 import HistoryContent from "../components/history/HistoryContent";
 import LoadMoreTrigger from "../components/history/LoadMoreTrigger";
 import HeaderBlur from "../components/ui/HeaderBlur";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import Swal from "sweetalert2";
 
 const History = () => {
   const { currency } = useConfig();
 
   const history = useHistory();
+
+  const handleDelete = async (tripId) => {
+    const result = await Swal.fire({
+      title: "¿Eliminar registro?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#10b981",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Sí, borrar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    history.handleDelete(tripId);
+  };
+
+  useEffect(() => {
+    if (history.onError) toast.error(history.onError);
+    if (history.onSuccess) toast.error(history.onSuccess);
+  }, [history.onError, history.onSuccess]);
 
   return (
     <>
@@ -30,7 +55,7 @@ const History = () => {
           />
           <HistoryContent
             currency={currency}
-            handleDelete={history.handleDelete}
+            handleDelete={handleDelete}
             historyList={history.historyList}
             loading={history.loading}
           />
