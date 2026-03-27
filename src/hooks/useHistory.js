@@ -27,37 +27,32 @@ export const useHistory = () => {
   const startDate =
     filter === "range" ? customRange.start : getDateRange(filter);
   const endDate = filter === "range" ? customRange.end : null;
+  const queryKey = ["history", user?.id, filter, startDate, endDate];
 
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["history", user?.id, filter, startDate, endDate],
-    queryFn: ({ pageParam = 0 }) => {
-      if (!user?.id) throw new Error("No user");
-      return historyApi.getHistory(
-        user.id,
-        pageParam,
-        itemsPerPage,
-        startDate,
-        endDate,
-        percentage,
-      );
-    },
-    getNextPageParam: (lastPage, allPages) => {
-      const totalLoaded = allPages.length * itemsPerPage;
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["history", user?.id, filter, startDate, endDate],
+      queryFn: ({ pageParam = 0 }) => {
+        if (!user?.id) throw new Error("No user");
+        return historyApi.getHistory(
+          user.id,
+          pageParam,
+          itemsPerPage,
+          startDate,
+          endDate,
+          percentage,
+        );
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        const totalLoaded = allPages.length * itemsPerPage;
 
-      if (totalLoaded >= lastPage.count) {
-        return undefined;
-      }
-      return allPages.length;
-    },
-    enabled: !!user?.id,
-  });
+        if (totalLoaded >= lastPage.count) {
+          return undefined;
+        }
+        return allPages.length;
+      },
+      enabled: !!user?.id,
+    });
 
   const historyList = data?.pages.flatMap((page) => page.list) ?? [];
   const stats = data?.pages[0]?.stats || {
@@ -74,7 +69,7 @@ export const useHistory = () => {
     onMutate: async (tripId) => {
       setOnError(null);
       setOnSuccess(null);
-      await queryClient.cancelQueries(["history", user?.id, startDate]);
+      await queryClient.cancelQueries(queryKey);
 
       const previousData = queryClient.getQueryData([
         "history",
@@ -82,7 +77,7 @@ export const useHistory = () => {
         startDate,
       ]);
 
-      queryClient.setQueryData(["history", user?.id, startDate], (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         if (!old) return old;
 
         return {
@@ -99,10 +94,7 @@ export const useHistory = () => {
     },
     onError: (err, variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(
-          ["history", user?.id, startDate],
-          context.previousData,
-        );
+        queryClient.setQueryData(queryKey, context.previousData);
       }
 
       console.log(err);
@@ -110,7 +102,7 @@ export const useHistory = () => {
     },
     onSuccess: () => {
       setOnSuccess("eliminado correctamente!");
-      refetch();
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -137,5 +129,9 @@ export const useHistory = () => {
     handleDelete: (tripId) => deleteMutation.mutate(tripId),
     onError,
     onSuccess,
+    clearStates: () => {
+      setOnError(null);
+      setOnSuccess(null);
+    },
   };
 };

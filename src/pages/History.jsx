@@ -27,14 +27,20 @@ const History = () => {
       cancelButtonText: "Cancelar",
     });
 
-    if (!result.isConfirmed) return;
-
-    history.handleDelete(tripId);
+    if (result.isConfirmed) {
+      history.handleDelete(tripId);
+    }
   };
 
   useEffect(() => {
-    if (history.onError) toast.error(history.onError);
-    if (history.onSuccess) toast.error(history.onSuccess);
+    if (history.onError) {
+      toast.error(history.onError);
+      history.clearStates();
+    }
+    if (history.onSuccess) {
+      toast.success(history.onSuccess);
+      history.clearStates();
+    }
   }, [history.onError, history.onSuccess]);
 
   return (

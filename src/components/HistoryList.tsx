@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { HistoryItemType } from "../types/history";
 import HistoryItem from "./HistoryItem";
 
@@ -14,14 +15,23 @@ function HistoryList({
 }: HistoriListProps) {
   return (
     <div className="flex flex-col gap-3">
-      {historyList.map((h: HistoryItemType) => (
-        <HistoryItem
-          item={h}
-          currency={currency}
-          onDelete={handleDelete}
-          key={h.id}
-        />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {historyList.map((h: HistoryItemType) => (
+          <motion.div
+            key={h.id}
+            layout
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{
+              opacity: 0,
+              x: 100,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <HistoryItem item={h} currency={currency} onDelete={handleDelete} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
