@@ -1,29 +1,25 @@
-import {
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom"
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import ProtectedRoute from "./components/ProtectedRoute"
-import { Toaster } from "sonner"
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "sonner";
 
-import Functions from "./pages/Functions"
-import History from "./pages/History"
-import Config from "./pages/Config"
-import SignUp from "./pages/SignUp"
-import Home from "./pages/Home"
-import Login from "./pages/Login"
-import AuthCallback from "./pages/AuthCallback"
-import ResetPassword from "./pages/ResetPassword"
-import NewPassword from "./pages/NewPassword"
-import { useAuth } from "./context/auth/useAuth"
-import Loader from "./components/Loader"
+import Functions from "./pages/Functions";
+import History from "./pages/History";
+import Config from "./pages/Config";
+import SignUp from "./pages/SignUp";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
+import ResetPassword from "./pages/ResetPassword";
+import NewPassword from "./pages/NewPassword";
+import { useAuth } from "./context/auth/useAuth";
+import Loader from "./components/Loader";
+import Github from "./components/Github";
 
 function App() {
+  const { loading } = useAuth();
 
-  const { loading } = useAuth()
-
-  if (loading) return <Loader />
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -55,8 +51,9 @@ function App() {
         </Routes>
       </Router>
       <Toaster />
+      <Github />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
