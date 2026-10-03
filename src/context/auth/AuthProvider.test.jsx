@@ -3,6 +3,7 @@ import { renderHook, act, waitFor, cleanup } from "@testing-library/react";
 import { AuthProvider } from "./AuthProvider";
 import { useAuth } from "./useAuth";
 import { supabase } from "../../lib/supabase";
+import { fetchUserProfile } from "../../lib/api";
 
 vi.mock("../../lib/supabase", () => ({
   supabase: {
@@ -76,4 +77,83 @@ describe("Proveedor de autenticación", () => {
 
     expect(result.current.user).toBeNull();
   });
+
+  it("recupera la sesión existente y carga el perfil del usuario", async () => {
+    const sessionUser = {
+      id: "usuario-prueba",
+      email: "prueba@example.com",
+    };
+
+    supabase.auth.getSession.mockResolvedValueOnce({
+      data: {
+        session: {
+          user: sessionUser,
+        },
+      },
+      error: null,
+    });
+
+    fetchUserProfile.mockResolvedValueOnce({
+      name: "Marcos",
+    });
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(fetchUserProfile).toHaveBeenCalledWith(sessionUser);
+
+    expect(result.current.user).toEqual({
+      id: "usuario-prueba",
+      email: "prueba@example.com",
+      is_test_user: false,
+      name: "Marcos",
+    });
+
+    expect(result.current.authLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it("elimina al usuario cuando Supabase notifica el cierre de sesión", async () => {
+    supabase.auth.getSession.mockResolvedValueOnce({
+      data: {
+        session: {
+          user: {
+            id: "usuario-prueba",
+            email: "prueba@example.com",
+          },
+        },
+      },
+      error: null,
+    });
+
+    fetchUserProfile.mockResolvedValueOnce({
+      name: "Marcos",
+    });
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    await waitFor(() => {
+      expect(result.current.user?.id).toBe("usuario-prueba");
+    });
+
+    // Recuperamos la función registrada para escuchar eventos.
+    const onAuthChange = supabase.auth.onAuthStateChange.mock.calls[0][0];
+
+    // Simulamos el aviso de cierre de sesión.
+    act(() => {
+      onAuthChange("SIGNED_OUT", null);
+    });
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.loading).toBe(false);
+    expect(result.current.authLoading).toBe(false);
+  });
+
 });
