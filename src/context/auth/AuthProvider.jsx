@@ -23,23 +23,53 @@ export const AuthProvider = ({ children }) => {
     };
   };
 
+  // const login = async ({ email, password }) => {
+  //   dispatch({ type: "INIT_LOGIN" });
+  //   const { data, error } = await supabase.auth.signInWithPassword({
+  //     email,
+  //     password,
+  //   });
+
+  //   if (error) {
+  //     dispatch({ type: "LOGIN_ERROR", payload: error.message });
+  //     return { success: false, error: error.message };
+  //   }
+
+  //   if (!data.user) {
+  //     return { success: false, error: "Credenciales inválidas" };
+  //   }
+
+  //   return { success: true };
+  // };
+
   const login = async ({ email, password }) => {
     dispatch({ type: "INIT_LOGIN" });
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error) {
-      dispatch({ type: "LOGIN_ERROR", payload: error.message });
-      return { success: false, error: error.message };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        dispatch({ type: "LOGIN_ERROR", payload: error.message });
+        return { success: false, error: error.message };
+      }
+
+      if (!data?.user) {
+        const message = "Credenciales inválidas";
+
+        dispatch({ type: "LOGIN_ERROR", payload: message });
+        return { success: false, error: message };
+      }
+
+      return { success: true };
+    } catch {
+      const message = "No se pudo iniciar sesión. Inténtalo de nuevo.";
+
+      dispatch({ type: "LOGIN_ERROR", payload: message });
+      return { success: false, error: message };
     }
-
-    if (!data.user) {
-      return { success: false, error: "Credenciales inválidas" };
-    }
-
-    return { success: true };
   };
 
   const handleUser = async (supabaseUser) => {
@@ -129,4 +159,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+};;
