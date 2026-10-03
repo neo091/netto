@@ -27,14 +27,13 @@ export default function useFunctions() {
 
     const response = await sendFeedback({ feedback });
 
-    if (response.message) {
+    if (response.success) {
       setStatus("success");
       setFeedback("");
       setTimeout(() => setStatus("idle"), 3000);
     } else {
-      console.log("error al enviar");
       setStatus("error");
-      setFeedback("");
+      setFeedbackError(response.error || "No se pudo enviar la sugerencia.");
       setTimeout(() => setStatus("idle"), 3000);
     }
   };

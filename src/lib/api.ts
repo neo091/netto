@@ -1,5 +1,4 @@
-import { User } from "@supabase/supabase-js";
-import { N8N_API_BASE } from "./env";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
 /**
@@ -72,55 +71,58 @@ export const deleteHistory = async (recordId: string, userId: string) => {
   if (error) throw error;
 };
 
-export const sendFeedback = async ({ feedback }: { feedback: string }) => {
-  const cleanFeedback = feedback.replace(/<[^>]*>?/gm, "").trim();
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 6000);
-
+export const sendFeedback = async ({
+  feedback,
+}: {
+  feedback: string;
+}): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> => {
   try {
-    const response = await fetch(
-      `${N8N_API_BASE}/webhook/aae9cdbd-3b51-4e4c-95d0-5ef814b38796`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          feedback: cleanFeedback,
-          name: "Usuario Beta",
-          timestamp: new Date().toISOString(),
-          metadata: {
-            page: window.location.pathname,
-            userAgent: navigator.userAgent,
-          },
-        }),
-        signal: controller.signal,
+    const { data, error } = await supabase.functions.invoke("send-feedback", {
+      body: {
+        feedback: feedback.trim(),
       },
-    );
+    });
 
-    clearTimeout(timeoutId);
+    if (error) {
+      let message = "No se pudo enviar la sugerencia.";
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Server error: ${response.status}`);
-    }
+      // Recuperamos el mensaje que devuelve el servidor.
+      if (error instanceof FunctionsHttpError) {
+        const body = await error.context.json().catch(() => null);
 
-    return { success: true, message: "feedback send!" };
-  } catch (error: any) {
-    clearTimeout(timeoutId);
+        if (typeof body?.error === "string") {
+          message = body.error;
+        } else if (error.context.status === 401) {
+          message = "Tu sesión no es válida. Vuelve a iniciar sesión.";
+        }
+      }
 
-    if (error.name === "AbortError") {
-      console.error("Feedback error: Timeout excedido");
       return {
         success: false,
-        error: "El servidor tardó demasiado en responder.",
+        error: message,
       };
     }
 
-    console.error("Feedback error:", error.message);
-    return { success: false, error: "No se pudo enviar el feedback." };
+    if (data?.success !== true) {
+      return {
+        success: false,
+        error: "El servidor no confirmó el envío.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Sugerencia enviada correctamente.",
+    };
+  } catch {
+    return {
+      success: false,
+      error: "No se pudo conectar. Inténtalo de nuevo.",
+    };
   }
 };
 

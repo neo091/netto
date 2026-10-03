@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .env
 .env.*
+# .gitignore
+supabase/functions/.env
+.env.local
