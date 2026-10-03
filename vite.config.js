@@ -1,27 +1,41 @@
-import { defineConfig } from "vite"
-import react from "@vitejs/plugin-react-swc"
-import tailwindcss from "@tailwindcss/vite"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: ["react", "react-dom"],
+  },
   test: {
-    global: true,
-    environtment: "jsdom",
-    setupFiles: "./src/tests/setup.js",
+    globals: true,
+    environment: "jsdom",
   },
   server: {
     proxy: {
-      '/api-n8n': {
-        target: 'https://n8n.paginaweb.pro',
+      "/api-n8n": {
+        target: "https://n8n.paginaweb.pro",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api-n8n/, '')
+        rewrite: (path) => path.replace(/^\/api-n8n/, ""),
       },
       "/sheets": {
-        target: 'https://api.sheetbest.com',
+        target: "https://api.sheetbest.com",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/sheets/, '')
-      }
-    }
-  }
-})
+        rewrite: (path) => path.replace(/^\/sheets/, ""),
+      },
+    },
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("/node_modules/@supabase/")) {
+            return "supabase";
+          }
+        },
+      },
+    },
+  },
+});

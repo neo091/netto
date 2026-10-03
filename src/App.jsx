@@ -1,57 +1,53 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "sonner";
 
-import Functions from "./pages/Functions";
-import History from "./pages/History";
-import Config from "./pages/Config";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import AuthCallback from "./pages/AuthCallback";
-import ResetPassword from "./pages/ResetPassword";
-import NewPassword from "./pages/NewPassword";
-import { useAuth } from "./context/auth/useAuth";
+const Functions = lazy(() => import("./pages/Functions"));
+const History = lazy(() => import("./pages/History"));
+const Config = lazy(() => import("./pages/Config"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const NewPassword = lazy(() => import("./pages/NewPassword"));
 import Loader from "./components/Loader";
-import Github from "./components/Github";
 
 function App() {
-  const { loading } = useAuth();
-
-  if (loading) return <Loader />;
-
   return (
     <>
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Functions" element={<Functions />} />
-          <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/new-password" element={<NewPassword />} />
-          <Route
-            path="/config"
-            element={
-              <ProtectedRoute>
-                <Config />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <ProtectedRoute>
-                <History />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Functions" element={<Functions />} />
+            <Route path="/SignUp" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/new-password" element={<NewPassword />} />
+            <Route
+              path="/config"
+              element={
+                <ProtectedRoute>
+                  <Config />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
       </Router>
       <Toaster />
-      <Github />
     </>
   );
 }
