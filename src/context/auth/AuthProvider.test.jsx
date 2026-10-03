@@ -60,7 +60,6 @@ describe("Proveedor de autenticación", () => {
       wrapper: AuthProvider,
     });
 
-    // Esperamos a que termine la comprobación inicial de sesión.
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -104,7 +103,8 @@ describe("Proveedor de autenticación", () => {
     });
 
     fetchUserProfile.mockResolvedValueOnce({
-      name: "Marcos",
+      id: "usuario-prueba",
+      first_name: "Marcos",
     });
 
     const { result } = renderHook(() => useAuth(), {
@@ -121,7 +121,10 @@ describe("Proveedor de autenticación", () => {
       id: "usuario-prueba",
       email: "prueba@example.com",
       is_test_user: false,
-      name: "Marcos",
+      first_name: "Marcos",
+      display_name: "Marcos",
+      show_email: false,
+      name_to_show: "Marcos",
     });
 
     expect(result.current.authLoading).toBe(false);
@@ -180,7 +183,8 @@ describe("Proveedor de autenticación", () => {
     });
 
     fetchUserProfile.mockResolvedValueOnce({
-      name: "Marcos",
+      id: "usuario-prueba",
+      first_name: "Marcos",
     });
 
     render(
