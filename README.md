@@ -1,185 +1,217 @@
-<div align="center">
+# Netto
 
-# 🚖 Netto - App de Liquidación para Taxistas
+Aplicación web para taxistas que permite registrar viajes, consultar la recaudación y calcular la liquidación entre conductor y empresa.
 
-### Optimiza tu jornada, controla tus ganancias.
+[Ver aplicación](https://netto-zeta.vercel.app/) · [Repositorio](https://github.com/neo091/netto)
 
-[![Desplegado en CubePath](https://img.shields.io/badge/Desplegado%20en-CubePath-00C853?style=for-the-badge&logo=cloud&logoColor=white)](https://cubepath.com)
-[![VITE](https://img.shields.io/badge/Vite-FFF?style=for-the-badge&logo=vite&logoColor=#3e63dd)](https://vite.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+## Qué problema resuelve
 
-[🚀 Ver Demo en Vivo](https://netto.paginaweb.pro/) | [📂 Repositorio](https://github.com/neo091/netto)
+Cuando un conductor trabaja a comisión, los cobros en efectivo y con tarjeta tienen efectos diferentes sobre la liquidación:
 
-</div>
+- El efectivo queda en manos del conductor.
+- Los cobros con tarjeta los recibe la empresa.
+- El conductor obtiene el porcentaje acordado sobre la recaudación.
 
-## 🧪 Acceso de Prueba (Modo Demo)
+Netto calcula el balance entre la comisión del conductor y el efectivo que ha recibido.
 
-Para facilitar la evaluación de la interfaz y la lógica de liquidación, se ha habilitado un usuario con datos precargados.
+Por ejemplo, con una comisión del 40 %:
 
-**email**: test@netto.paginaweb.pro\
-**password**: B6KHJKYs8cb
+| Viaje | Comisión del conductor | Liquidación |
+|---|---:|---|
+| 100 € cobrados con tarjeta | 40 € | La empresa debe entregar 40 € al conductor |
+| 100 € cobrados en efectivo | 40 € | El conductor debe entregar 60 € a la empresa |
 
-> [!NOTE]
-> Por seguridad, las funciones de cambio de contraseña y acceso a ajustes críticos están restringidas para este perfil.
+Un balance positivo indica dinero a cobrar; uno negativo, dinero a entregar.
 
----
+## Funcionalidades
 
-## 📝 Descripción del Proyecto
+- Gestión del estado del conductor: libre, ocupado, pagando y descanso.
+- Registro de viajes y método de pago.
+- Porcentaje de comisión configurable, con un 40 % inicial.
+- Historial de viajes con filtros por fechas y paginación.
+- Resumen de recaudación, comisión y liquidación.
+- Gráficas de actividad.
+- Inicio de sesión y recuperación de contraseña mediante Supabase.
+- Envío de sugerencias para usuarios autenticados.
+- Solicitud pública de acceso con protección mediante Turnstile.
+- Interfaz adaptable a móvil con tema oscuro.
 
-**Netto** es una Progressive Web App (PWA) diseñada específicamente para taxistas que necesitan gestionar su liquidación diaria de forma rápida y profesional.
+El acceso está en fase beta y se solicita desde el formulario de invitación.
 
-En el sector del taxi, el conductor suele trabajar bajo una comisión (comúnmente el 40%). El problema surge al mezclar cobros en efectivo (que el taxista guarda en su bolsillo) y cobros con tarjeta (que van directos a la empresa). **Netto calcula en tiempo real cuánto dinero debe entregar el taxista o cuánto le debe la empresa**, eliminando errores de cálculo manual.
+## Capturas
 
-### ✨ Características Principales
+<p align="center">
+  <img src="./src/assets/home.png" alt="Pantalla principal de Netto" width="30%" />
+  <img src="./src/assets/configuracion.png" alt="Configuración del conductor" width="30%" />
+  <img src="./src/assets/historial.png" alt="Historial de viajes" width="30%" />
+</p>
 
-- **Sistema de Estados**: Gestión de estados (Libre, Ocupado, Pagando, Descanso).
-- **Cálculo Inteligente**: Lógica contable basada en porcentaje configurable (Regla del 40% por defecto).
-- **Diseño Premium**: Interfaz Dark Mode con acentos Esmeralda y efectos Glassmorphism.
-- **Offline First**: Como PWA, permite un acceso rápido desde el inicio del móvil.
-- **Historial Detallado**: Registro de viajes con filtros inteligentes (Hoy, Semana, Mes).
+## Tecnologías
 
----
+| Área | Tecnología |
+|---|---|
+| Interfaz | React 19, JavaScript y TypeScript |
+| Desarrollo y compilación | Vite |
+| Estilos | Tailwind CSS |
+| Navegación | React Router |
+| Estado y consultas | React Context, useReducer y TanStack Query |
+| Gráficas | Recharts |
+| Notificaciones | Sonner |
+| Autenticación y base de datos | Supabase Auth y PostgreSQL |
+| Funciones del servidor | Supabase Edge Functions |
+| Envío de correo | Resend |
+| Protección del formulario público | Cloudflare Turnstile |
+| Pruebas | Vitest y React Testing Library |
+| Despliegue | Vercel |
+| Gestor de paquetes | pnpm |
 
-## 📸 Capturas de Pantalla
+## Arquitectura
 
-<div align="center">
-  <img src="/src/assets/home.png" alt="Home" width="30%" />
-  <img src="/src/assets/configuracion.png" alt="Configuración" width="30%" />
-  <img src="/src/assets/historial.png" alt="Historial" width="30%" />
-</div>
+El frontend se ejecuta en el navegador y se despliega en Vercel.
 
----
+Supabase gestiona la autenticación, los perfiles y el historial de viajes. La función PostgreSQL `get_history_stats` calcula los totales del historial para el periodo y porcentaje seleccionados.
 
-## 🛠️ Instalación Local
+Los correos se procesan en Supabase Edge Functions:
 
-1. **Clona el repositorio**:
+- **`send-feedback`:** comprueba la sesión, valida la sugerencia y la envía al responsable de Netto mediante Resend.
+- **`request-access`:** valida el correo y el token de Turnstile antes de enviar la solicitud de acceso.
+
+El destinatario de estos mensajes se configura en el servidor. La solicitud de acceso envía una notificación para su revisión; no crea una cuenta automáticamente.
+
+La lista de funciones es pública. El formulario de sugerencias solo aparece para usuarios autenticados y su envío también se protege en el servidor.
+
+## Desarrollo local
+
+### Requisitos
+
+- Node.js 22.
+- pnpm 12.8.1.
+- Un proyecto de Supabase configurado.
+- Un widget de Cloudflare Turnstile para las solicitudes de acceso.
+
+### Instalación
 
 ```bash
-git clone git@github.com:neo091/netto.git
+git clone https://github.com/neo091/netto.git
 cd netto
+pnpm install --frozen-lockfile
 ```
 
-2. Instala las dependencias:
-
-```bash
-npm install
-```
-
-3. Configurar variables de entorno:
+Crea un archivo `.env.local` en la raíz del proyecto:
 
 ```env
-VITE_N8N_API_BASE=tu_api (yo use n8n por eso le puse ese nombre)
+VITE_SUPABASE_URL=https://TU_PROYECTO.supabase.co
+VITE_SUPABASE_KEY=TU_CLAVE_PUBLICA_DE_SUPABASE
+VITE_TURNSTILE_SITE_KEY=TU_SITE_KEY_DE_TURNSTILE
+VITE_EDIT_PASSWORD_REDIRECT=http://TU_DOMINIO/auth/new-password
 ```
 
-4. Iniciar servidor de desarrollo:
+`VITE_SUPABASE_KEY` debe contener la clave pública del proyecto, nunca una clave administrativa.
+
+Inicia el servidor:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-## 🗄️ Configuración de la Base de Datos (Supabase)
+Si cambias las variables de entorno, reinicia el servidor de desarrollo.
 
-Netto utiliza Supabase no solo como base de datos, sino como el motor de cálculo para la liquidación de los conductores. Sigue estos pasos para replicar la estructura necesaria:
+## Configuración de Supabase
 
-### 1. Crear el Proyecto
+### Base de datos
 
-- Ve a Supabase Dashboard y crea un nuevo proyecto.
+En un proyecto nuevo de Supabase, ejecuta `supabase_setup.sql` desde el SQL Editor.
 
-- Una vez creado, ve a Project Settings > API y copia tu URL y tu anon public key.
+El script crea:
 
-- Pégalas en tu archivo .env local:
+- `profiles`: perfiles vinculados a los usuarios de Supabase Auth.
+- `history`: registros de viajes.
+- Políticas de Row Level Security para acceder a los datos propios.
+- Un trigger que crea el perfil cuando se registra un usuario.
+- La función `get_history_stats` para calcular las estadísticas del historial.
 
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=tu_url_de_supabase
-VITE_SUPABASE_ANON_KEY=tu_clave_anonima
+### Autenticación
 
-# Automation & API (n8n/SheetBest)
-VITE_N8N_API_BASE=tu_endpoint_de_n8n
+En **Authentication → URL Configuration**, configura la URL de la aplicación y las redirecciones autorizadas.
+
+Para recuperar contraseñas, la dirección indicada en `VITE_EDIT_PASSWORD_REDIRECT` debe estar permitida en Supabase. Configura las direcciones correspondientes tanto al desarrollo local como al despliegue.
+
+### Correo
+
+En **Edge Functions → Secrets**, configura:
+
+| Secreto | Uso |
+|---|---|
+| `RESEND_API_KEY` | Autenticación con Resend |
+| `EMAIL_FROM` | Remitente del correo |
+| `EMAIL_TO` | Destinatario de las sugerencias y solicitudes |
+| `TURNSTILE_SECRET_KEY` | Validación de los tokens de Turnstile |
+
+El remitente actual es:
+
+```text
+Netto <avisos@netto.polataxi.es>
 ```
 
-### 2. Ejecutar el Script de Inicialización
+Las claves privadas se guardan en Supabase y no se incluyen en variables `VITE_`.
 
-Para que la aplicación funcione, es necesario crear las tablas, las políticas de seguridad y las funciones de cálculo.
+Las Edge Functions se gestionan actualmente desde el panel de Supabase. Para reproducir el backend en otro proyecto, también es necesario crear y desplegar `send-feedback` y `request-access`; el script SQL no las instala.
 
-- En el panel lateral de Supabase, entra en SQL Editor.
+## Configuración de Turnstile
 
-- Haz clic en "New Query".
+La Site key se utiliza en el frontend y la Secret key en Supabase.
 
-- Abre el archivo supabase_setup.sql que se encuentra en la raíz de este repositorio.
+El widget del formulario de acceso utiliza la acción:
 
-- Copia todo su contenido, pégalo en el editor y haz clic en Run.
+```text
+request-access
+```
 
-### 3. ¿Qué instala este script?
+Añade a Turnstile los hostnames desde los que se enviarán solicitudes. La función `request-access` debe aceptar esos mismos hostnames y comprobar la acción del token.
 
-El script configura automáticamente los tres pilares de la app:
+La configuración del despliegue actual utiliza:
 
-- Tablas de Datos: profiles (información del conductor) e history (registro de cada viaje).
+```text
+netto-zeta.vercel.app
+```
 
-- Automatización (Trigger): Crea un perfil de usuario automáticamente en cuanto alguien nuevo se registra en la sección de Autenticación.
+Para enviar solicitudes desde el entorno local, también debes permitir `localhost` en Turnstile y en la función del servidor.
 
-- Cerebro Contable (get_history_stats): Una función RPC de PostgreSQL que calcula en tiempo real el balance de liquidación, aplicando el porcentaje personalizable del conductor y restando el efectivo cobrado.
+## Comandos
 
-### 4. Seguridad (RLS)
+| Comando | Descripción |
+|---|---|
+| `pnpm dev` | Inicia el servidor de desarrollo |
+| `pnpm build` | Genera la aplicación en `dist` |
+| `pnpm preview` | Sirve la compilación localmente |
+| `pnpm lint` | Ejecuta ESLint |
+| `pnpm test --run` | Ejecuta las pruebas una vez |
+| `pnpm test:ui` | Abre la interfaz de Vitest |
 
-El script habilita Row Level Security (RLS) por defecto. Esto garantiza que:
+Las pruebas existentes cubren cálculos de fechas y liquidaciones, rutas protegidas, el formulario de login y el proveedor de autenticación.
 
-- Un conductor solo pueda ver sus propios viajes.
+## Despliegue en Vercel
 
-- Nadie pueda leer el perfil de otro usuario sin estar autenticado.
+El proyecto utiliza estas opciones:
 
-## ⚙️ Implementación Técnica
+| Configuración | Valor |
+|---|---|
+| Framework | Vite |
+| Node.js | 22.x |
+| Instalación | `npx --yes pnpm@12.8.1 install --frozen-lockfile` |
+| Compilación | `pnpm build` |
+| Directorio de salida | `dist` |
 
-### Stack Tecnológico & Arquitectura
+Configura las variables del frontend en Vercel, utilizando la dirección publicada para `VITE_EDIT_PASSWORD_REDIRECT`.
 
-Netto no es solo una aplicación de frontend; es un ecosistema de microservicios diseñado para la alta disponibilidad en movilidad.
+El archivo `vercel.json` permite abrir directamente las rutas de React y recargarlas sin recibir un error 404.
 
-- 📱 **Frontend**: React 18 con Vite.
-- ⚡ **Estilos**: Tailwind CSS con diseño Glassmorphism y modo oscuro nativo.
-- 🤖 **Base de Datos & Auth**: Supabase.
-- 📊 **Gestión de Estado**: React Context + useReducer (Arquitectura robusta sin dependencias pesadas).
-- **Notificaciones**: Sonner para feedback en tiempo real.
+Los cambios en las variables de entorno requieren un nuevo despliegue.
 
-### Arquitectura de Datos
+## Estado del proyecto
 
-El proyecto utiliza una capa de API centralizada en `lib/api.ts` para interactuar con Supabase, asegurando que la lógica de negocio esté separada de la interfaz de usuario.
+Netto está en desarrollo y en fase beta. El historial y los envíos de correo requieren conexión a Internet.
 
-### 🚀 Despliegue e Infraestructura (Dockploy)
+El proyecto incluye un manifiesto web y configuración para su uso desde dispositivos móviles. Actualmente no implementa funcionamiento completo sin conexión.
 
-La aplicación se gestiona mediante una arquitectura de proyectos independientes dentro de Dockploy, optimizando recursos y escalabilidad:
-
-- **App Engine (Railpack):** El frontend de Netto se despliega mediante Railpack. Este sistema detecta automáticamente el entorno de Vite, optimizando la build de producción y sirviéndola con latencia mínima, ideal para conductores en zonas de baja cobertura.
-- **Automation Engine (n8n):** Instancia de n8n autogestionada en un proyecto paralelo de Dockploy. Actúa como el "cerebro" logístico de la aplicación.
-- **Pipeline de Datos:**
-  - **Webhooks:** n8n recibe los registros y feedbacks en tiempo real.
-  - **SheetBest API:** Conecta el flujo de n8n con Google Sheets, permitiendo una gestión administrativa transparente y ágil de la lista de espera (Beta).
-
-<div align="center">
-  <img src="/src/assets/n8n-1.png" alt="Home" width="100%" />
-</div>
-
----
-
-## 🗄️ Backend & Persistencia
-
-- **BaaS:** Supabase (PostgreSQL) para la gestión de usuarios, autenticación y almacenamiento del historial de viajes.
-
-- **Storage:** Google Sheets (vía n8n + SheetBest) para el control administrativo de nuevos conductores.
-
-## ☁️ Uso de CubePath
-
-Netto ha sido desplegado en **CubePath** aprovechando su infraestructura escalable para aplicaciones modernas.
-
-- Baja Latencia: Crucial para el registro de viajes en milisegundos.
-
-- PWA Ready: Configuración de servidor optimizada para el registro de Service Workers.
-
-- Seguridad: Variables de entorno críticas gestionadas de forma segura desde el panel de CubePath.
-
----
-
-<div align="center">
-
-Proyecto creado para la Hackatón CubePath 2026 🚀
-
-</div>
+Creado por [Marcos Delgado](https://github.com/neo091). El proyecto nació para la Hackatón CubePath 2026; su despliegue actual está en Vercel.
