@@ -1,9 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act, waitFor, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  renderHook,
+  act,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { AuthProvider } from "./AuthProvider";
 import { useAuth } from "./useAuth";
 import { supabase } from "../../lib/supabase";
 import { fetchUserProfile } from "../../lib/api";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import Login from "../../pages/Login";
 
 vi.mock("../../lib/supabase", () => ({
   supabase: {
@@ -156,4 +166,58 @@ describe("Proveedor de autenticación", () => {
     expect(result.current.authLoading).toBe(false);
   });
 
+  it("conserva el historial al recuperar la sesión y muestra login al cerrarla", async () => {
+    supabase.auth.getSession.mockResolvedValueOnce({
+      data: {
+        session: {
+          user: {
+            id: "usuario-prueba",
+            email: "prueba@example.com",
+          },
+        },
+      },
+      error: null,
+    });
+
+    fetchUserProfile.mockResolvedValueOnce({
+      name: "Marcos",
+    });
+
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={["/history"]}>
+          <Routes>
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <p>Historial de prueba</p>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<p>Página de inicio de prueba</p>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>,
+    );
+
+    // Recuperar la sesión debe conservar la página solicitada.
+    expect(await screen.findByText("Historial de prueba")).not.toBeNull();
+
+    expect(screen.queryByText("Página de inicio de prueba")).toBeNull();
+
+    // Supabase comunica que la sesión se ha cerrado.
+    const onAuthChange = supabase.auth.onAuthStateChange.mock.calls[0][0];
+
+    act(() => {
+      onAuthChange("SIGNED_OUT", null);
+    });
+
+    expect(
+      await screen.findByRole("button", { name: "Entrar al Turno" }),
+    ).not.toBeNull();
+
+    expect(screen.queryByText("Historial de prueba")).toBeNull();
+  });
 });
