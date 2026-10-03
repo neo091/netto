@@ -5,6 +5,7 @@ import WhatsAppConfigSection from "../components/features/WhatsAppConfigSection"
 import ComingSoonSection from "../components/ComingSoonSection";
 import { Link } from "react-router-dom";
 import HeaderBlur from "../components/ui/HeaderBlur";
+import ProfileSection from "../components/features/ProfileSection";
 
 const Config = () => {
   const { logout, user } = useAuth();
@@ -16,10 +17,18 @@ const Config = () => {
       {user?.is_test_user && <p>Usuario de prueba</p>}
 
       <div className="max-w-md mx-auto flex flex-col gap-6">
+        <ProfileSection />
         <SymbolSection />
         <PercentageSection />
         <WhatsAppConfigSection />
         <ComingSoonSection />
+
+        <Link
+          to="/change-logs"
+          className="bg-gray-800/50 border border-gray-700 rounded-3xl py-3 px-4 text-white font-bold text-center hover:opacity-75 transition-all"
+        >
+          Ver novedades de Netto
+        </Link>
 
         {user?.is_test_user ? (
           ""

@@ -1,5 +1,10 @@
 import { useState } from 'react'
 import { useConfig } from '../../context/config/useConfig'
+import {
+  ArrowBadgeDownIcon,
+  CharLineIcon,
+  ReportMoneyIcon,
+} from "../../assets/Icons";
 
 function SummarySection({ stats, filter }) {
 
@@ -13,7 +18,9 @@ function SummarySection({ stats, filter }) {
         className="w-full mb-4 bg-gray-800 border border-gray-700 p-4 rounded-2xl flex justify-between items-center active:scale-95 transition-all"
       >
         <div className="flex items-center gap-3">
-          <div className="bg-green-500/10 p-2 rounded-lg">💰</div>
+          <div className="bg-green-500/10 p-2 rounded-lg">
+            <ReportMoneyIcon />
+          </div>
           <div className="text-left">
             <p className="text-[10px] text-gray-500 uppercase font-bold">
               Ganancia {filter} ({percentage}%)
@@ -27,7 +34,7 @@ function SummarySection({ stats, filter }) {
         <span
           className={`text-gray-500 transition-transform ${showSummary ? "rotate-180" : ""}`}
         >
-          ▼
+          <ArrowBadgeDownIcon />
         </span>
       </button>
 
@@ -40,9 +47,7 @@ function SummarySection({ stats, filter }) {
             </p>
             <p className="text-4xl font-black text-white">
               {stats.gananciaNeta}
-              <span className="text-xl ml-1 text-green-500">
-                {currency}
-              </span>
+              <span className="text-xl ml-1 text-green-500">{currency}</span>
             </p>
             <p className="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">
               Sobre un bruto de {stats.totalBruto}
@@ -71,10 +76,11 @@ function SummarySection({ stats, filter }) {
             </div>
           </div>
           <div
-            className={`p-4 rounded-2xl flex justify-between items-center ${stats.diferenciaEfectivo >= 0
-              ? "bg-green-500/10 border border-green-500/20" // Caso: Te falta cobrar
-              : "bg-red-500/10 border border-red-500/20" // Caso: Debes entregar
-              }`}
+            className={`p-4 rounded-2xl flex justify-between items-center ${
+              stats.diferenciaEfectivo >= 0
+                ? "bg-green-500/10 border border-green-500/20" // Caso: Te falta cobrar
+                : "bg-red-500/10 border border-red-500/20" // Caso: Debes entregar
+            }`}
           >
             <div>
               <p className="text-[10px] font-black uppercase tracking-tighter text-gray-400">
@@ -83,16 +89,21 @@ function SummarySection({ stats, filter }) {
                   : "Debes entregar a la empresa:"}
               </p>
               <p
-                className={`text-xl font-black ${stats.diferenciaEfectivo >= 0
-                  ? "text-green-500"
-                  : "text-red-500"
-                  }`}
+                className={`text-xl font-black ${
+                  stats.diferenciaEfectivo >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
               >
                 {Math.abs(stats.diferenciaEfectivo)} {currency}
               </p>
             </div>
             <div className="text-2xl">
-              {stats.diferenciaEfectivo >= 0 ? "💰" : "📉"}
+              {stats.diferenciaEfectivo >= 0 ? (
+                <ReportMoneyIcon />
+              ) : (
+                <CharLineIcon />
+              )}
             </div>
           </div>
 
@@ -104,7 +115,7 @@ function SummarySection({ stats, filter }) {
         </div>
       )}
     </section>
-  )
+  );
 }
 
 export default SummarySection

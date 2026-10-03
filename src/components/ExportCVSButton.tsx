@@ -1,3 +1,5 @@
+import { ExportFileIcon } from "../assets/Icons";
+
 type filter = "all" | "today" | "week" | "month";
 type HistoryItem = {
   created_at: string;
@@ -35,9 +37,9 @@ function ExportToCVSButton({ historyList, filter }: ExportButtonProps) {
   return (
     <button
       onClick={exportToCSV}
-      className="text-[10px] bg-gray-700 text-gray-300 px-3 py-1 rounded hover:bg-gray-600 border border-gray-600"
+      className="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-gray-600 border border-gray-600 flex items-center gap-2"
     >
-      📥 Exportar CSV
+      <ExportFileIcon /> Exportar CSV
     </button>
   );
 }

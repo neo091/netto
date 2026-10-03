@@ -15,32 +15,40 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   const createCleanUser = (supabaseUser, profileData) => {
+    const email = supabaseUser.email ?? "";
+    const metadata = supabaseUser.user_metadata ?? {};
+
+    const metadataName =
+      typeof metadata.display_name === "string"
+        ? metadata.display_name.trim()
+        : "";
+
+    const profileName =
+      typeof profileData?.first_name === "string"
+        ? profileData.first_name.trim()
+        : "";
+
+    const defaultName = email.split("@")[0];
+
+    const displayName =
+      metadataName ||
+      (profileName !== "Conductor" ? profileName : "") ||
+      defaultName ||
+      "Conductor";
+
+    const showEmail = metadata.show_email === true;
+
     return {
-      id: supabaseUser.id,
-      email: supabaseUser.email,
-      is_test_user: supabaseUser.email === "test@netto.paginaweb.pro",
       ...profileData,
+      id: supabaseUser.id,
+      email,
+      is_test_user: supabaseUser.email === "test@netto.paginaweb.pro",
+      first_name: displayName,
+      display_name: displayName,
+      show_email: showEmail,
+      name_to_show: showEmail ? email : displayName,
     };
   };
-
-  // const login = async ({ email, password }) => {
-  //   dispatch({ type: "INIT_LOGIN" });
-  //   const { data, error } = await supabase.auth.signInWithPassword({
-  //     email,
-  //     password,
-  //   });
-
-  //   if (error) {
-  //     dispatch({ type: "LOGIN_ERROR", payload: error.message });
-  //     return { success: false, error: error.message };
-  //   }
-
-  //   if (!data.user) {
-  //     return { success: false, error: "Credenciales inválidas" };
-  //   }
-
-  //   return { success: true };
-  // };
 
   const login = async ({ email, password }) => {
     dispatch({ type: "INIT_LOGIN" });
@@ -142,6 +150,56 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  const updateDisplayName = async ({ name, showEmail }) => {
+    if (!state.user) {
+      return {
+        success: false,
+        error: "Inicia sesión para cambiar tu nombre.",
+      };
+    }
+
+    const cleanName = typeof name === "string" ? name.trim() : "";
+
+    if (!cleanName || cleanName.length > 80) {
+      return {
+        success: false,
+        error: "El nombre debe tener entre 1 y 80 caracteres.",
+      };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          display_name: cleanName,
+          show_email: showEmail === true,
+        },
+      });
+
+      if (error || !data?.user) {
+        return {
+          success: false,
+          error: "No se pudo guardar el nombre. Inténtalo de nuevo.",
+        };
+      }
+
+      // Actualizamos la interfaz con el usuario devuelto por Supabase.
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: createCleanUser(data.user, {
+          ...state.user,
+          first_name: cleanName,
+        }),
+      });
+
+      return { success: true };
+    } catch {
+      return {
+        success: false,
+        error: "No se pudo conectar. Inténtalo de nuevo.",
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -149,6 +207,7 @@ export const AuthProvider = ({ children }) => {
         user: state.user,
         loading: state.loading,
         authLoading: state.authLoading,
+        updateDisplayName,
         login,
         logout: async () => {
           await supabase.auth.signOut();

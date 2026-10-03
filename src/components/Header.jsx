@@ -29,7 +29,7 @@ const Header = ({ backspace }) => {
           )}
 
           <div className="flex flex-col items-center">
-            <Saludo name={user?.first_name} />
+            <Saludo name={user?.name_to_show ?? user?.first_name} />
             <StatusText status={status} />
           </div>
 
@@ -49,7 +49,7 @@ const Header = ({ backspace }) => {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 export default Header

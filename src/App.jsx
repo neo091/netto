@@ -13,6 +13,7 @@ const Login = lazy(() => import("./pages/Login"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const NewPassword = lazy(() => import("./pages/NewPassword"));
+const ChangeLogs = lazy(() => import("./pages/ChangeLogs"));
 import Loader from "./components/Loader";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Functions" element={<Functions />} />
+            <Route path="/change-logs" element={<ChangeLogs />} />
             <Route path="/SignUp" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

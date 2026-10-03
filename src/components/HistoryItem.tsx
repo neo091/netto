@@ -1,4 +1,4 @@
-import { IconsTrash } from "../assets/Icons";
+import { ClockOneIcon, IconsTrash } from "../assets/Icons";
 import { HistoryItemType } from "../types/history";
 
 interface HistoryItemProps {
@@ -23,8 +23,8 @@ function HistoryItem({ item, onDelete, currency }: HistoryItemProps) {
               {item.paymethod}
             </span>
           </div>
-          <p className="text-sm text-gray-400 mt-1">
-            ⏱️ {item.duration} •{" "}
+          <p className="text-sm text-gray-400 mt-1 flex items-center gap-2">
+            <ClockOneIcon size={16} /> {item.duration} •{" "}
             {new Date(item.created_at).toLocaleDateString(undefined, {
               day: "numeric",
               month: "short",
