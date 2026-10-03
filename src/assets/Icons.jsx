@@ -30,12 +30,14 @@ export const IconDelete = () => (
   </svg>
 );
 
-export const IconCog = ({ size = 8, className }) => (
+export const IconCog = ({ size = 24, className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    className={`size-${size}`}
+    width={size}
+    height={size}
+    className={className}
   >
     <path
       fillRule="evenodd"
@@ -138,11 +140,11 @@ export const IconGithub = ({ size = 8, className }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
     <g
       id="SVGRepo_tracerCarrier"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     ></g>
     <g id="SVGRepo_iconCarrier">
       {" "}
@@ -163,9 +165,9 @@ export const HistoryIcon = ({ size = 24, className }) => (
     height={size}
     fill="none"
     stroke="currentColor"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
     viewBox="0 0 24 24"
   >
     <path stroke="none" d="M0 0h24v24H0z" />

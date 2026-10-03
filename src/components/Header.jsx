@@ -37,7 +37,7 @@ const Header = ({ backspace }) => {
             to="/config"
             className="h-10 w-10 bg-gray-800 rounded-xl border border-gray-700 flex items-center justify-center"
           >
-            <IconCog size={20} className="text-gray-400" />
+            <IconCog className="text-gray-400" />
           </Link>
         </div>
 

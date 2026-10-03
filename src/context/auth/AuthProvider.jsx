@@ -134,8 +134,15 @@ export const AuthProvider = ({ children }) => {
         if (!isMounted) return;
 
         if (event === "SIGNED_IN" && session?.user) {
+          const signedInUser = session.user;
+
           dispatch({ type: "INIT_LOGIN" });
-          handleUser(session.user);
+
+          setTimeout(() => {
+            if (isMounted) {
+              void handleUser(signedInUser);
+            }
+          }, 0);
         }
 
         if (event === "SIGNED_OUT") {

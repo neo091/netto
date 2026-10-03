@@ -59,10 +59,8 @@ export default function ChangeLogs() {
       <div className="max-w-3xl mx-auto">
         <HeaderBlur label="Novedades" />
 
-        <article className="bg-gray-800/50 border border-gray-700 rounded-3xl p-6 sm:p-8 break-words">
-          <Markdown components={markdownComponents}>
-            {changelog}
-          </Markdown>
+        <article className="bg-gray-800/50 border border-gray-700 rounded-3xl p-6 sm:p-8 wrap-break-word">
+          <Markdown components={markdownComponents}>{changelog}</Markdown>
         </article>
       </div>
     </main>
