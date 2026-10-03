@@ -3,7 +3,6 @@ import SymbolSection from "../components/features/SymbolSection";
 import PercentageSection from "../components/features/PercentageSection";
 import WhatsAppConfigSection from "../components/features/WhatsAppConfigSection";
 import ComingSoonSection from "../components/ComingSoonSection";
-import NavSection from "../components/NavSection";
 import { Link } from "react-router-dom";
 import HeaderBlur from "../components/ui/HeaderBlur";
 
