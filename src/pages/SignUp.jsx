@@ -1,51 +1,86 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { FunctionsHttpError } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
+
 import { Link } from "react-router-dom";
 import { IconChevronLeft, IconWhatsapp, IconAlert } from "../assets/Icons";
 import { toast } from "sonner";
 import CenterContentLayout from "../layouts/CenterContentLayout";
 
-const BASE_API = import.meta.env.VITE_N8N_API_BASE;
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
 
-  const createAccount = async () => {
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef(null);
+  const submittingRef = useRef(false);
+
+  const handleRequestAccess = async (e) => {
+    e.preventDefault();
+
+    if (submittingRef.current) return;
+
+    if (!turnstileToken) {
+      toast.error("Completa la verificación antes de enviar.");
+      return;
+    }
+
+    submittingRef.current = true;
     setLoading(true);
     setSuccess(null);
+
     try {
-      const response = await fetch(
-        `${BASE_API}/webhook/d821c59d-8db3-4e5f-a8f6-504e33987fc3`,
+      const { data, error } = await supabase.functions.invoke(
+        "request-access",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+          body: {
+            email: email.trim().toLowerCase(),
+            turnstileToken,
           },
-          body: JSON.stringify({
-            email,
-          }),
         },
       );
 
-      if (response.ok) {
-        toast.success("enviado!");
-        setEmail("");
-        setSuccess(
-          "Hemos recibido tu peticion, sera procesada y te enviaremos un correo al finalizar la verificacion",
-        );
+      if (error) {
+        let message = "No se pudo enviar la solicitud.";
+
+        if (error instanceof FunctionsHttpError) {
+          const body = await error.context.json().catch(() => null);
+
+          if (typeof body?.error === "string") {
+            message = body.error;
+          }
+        }
+
+        throw new Error(message);
       }
+
+      if (data?.success !== true) {
+        throw new Error("El servidor no confirmó el envío.");
+      }
+
+      toast.success("Solicitud enviada.");
+      setEmail("");
+      setSuccess(
+        "Hemos recibido tu solicitud. Te contactaremos después de revisarla.",
+      );
     } catch (error) {
-      toast.error("ocurrió un error");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "No se pudo conectar. Inténtalo de nuevo.",
+      );
     } finally {
+      // Cada token solo puede utilizarse una vez.
+      setTurnstileToken("");
+      turnstileRef.current?.reset();
+
+      submittingRef.current = false;
       setLoading(false);
     }
-  };
-
-  const handleRequestAccess = (e) => {
-    e.preventDefault();
-
-    createAccount();
   };
 
   return (
@@ -93,14 +128,37 @@ const SignUp = () => {
             />
           </div>
 
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            options={{
+              action: "request-access",
+              theme: "dark",
+            }}
+            onSuccess={(token) => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken("")}
+            onError={() => {
+              setTurnstileToken("");
+              toast.error(
+                "No se pudo completar la verificación. Inténtalo de nuevo.",
+              );
+            }}
+          />
+
           <button
-            disabled={loading}
+            disabled={loading || !turnstileToken}
             type="submit"
             className="w-full bg-green-500 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all active:scale-95"
           >
             {loading ? "Solicitando..." : "Solicitar Invitación"}
           </button>
         </form>
+
+        {success && (
+          <p role="status" className="mt-4 text-sm text-green-400">
+            {success}
+          </p>
+        )}
 
         <div className="mt-12 space-y-6">
           <div className="relative">
