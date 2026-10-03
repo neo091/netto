@@ -35,6 +35,11 @@ Un balance positivo indica dinero a cobrar; uno negativo, dinero a entregar.
 - Envío de sugerencias para usuarios autenticados.
 - Solicitud pública de acceso con protección mediante Turnstile.
 - Interfaz adaptable a móvil con tema oscuro.
+- Edición del nombre mostrado desde Configuración.
+- Nombre inicial derivado de la parte del correo anterior a `@`.
+- Opción de mostrar el correo completo en lugar del nombre.
+- Sincronización del nombre entre Supabase Auth y el perfil.
+- Página pública de novedades en `/change-logs`.
 
 El acceso está en fase beta y se solicita desde el formulario de invitación.
 
@@ -64,6 +69,7 @@ El acceso está en fase beta y se solicita desde el formulario de invitación.
 | Pruebas | Vitest y React Testing Library |
 | Despliegue | Vercel |
 | Gestor de paquetes | pnpm |
+| Visualización de Markdown | react-markdown |
 
 ## Arquitectura
 
@@ -79,6 +85,36 @@ Los correos se procesan en Supabase Edge Functions:
 El destinatario de estos mensajes se configura en el servidor. La solicitud de acceso envía una notificación para su revisión; no crea una cuenta automáticamente.
 
 La lista de funciones es pública. El formulario de sugerencias solo aparece para usuarios autenticados y su envío también se protege en el servidor.
+
+## Perfil del usuario
+
+El usuario puede elegir un nombre y decidir si quiere mostrarlo o utilizar
+su correo completo en el saludo.
+
+El nombre se guarda como `display_name` en los metadatos de Supabase Auth.
+La preferencia de mostrar el correo se guarda como `show_email`.
+
+El trigger `sync_user_display_name` actualiza `profiles.first_name` cuando
+cambia el nombre en Auth.
+
+Si no existe un nombre personalizado, la interfaz utiliza la parte del
+correo anterior a `@`. Por ejemplo, `marcos@example.com` se muestra como
+`marcos`. Los perfiles antiguos con el nombre genérico «Conductor»
+también utilizan este valor en la interfaz.
+
+El nombre y la preferencia se guardan al pulsar «Guardar nombre».
+
+## Historial de cambios
+
+Las novedades están disponibles en la página pública
+[/change-logs](https://netto-zeta.vercel.app/change-logs), accesible desde
+Configuración.
+
+El contenido se mantiene en `src/content/change-logs.md` y se muestra
+mediante `react-markdown`.
+
+Para publicar nuevas entradas, añade una sección al principio del archivo
+y despliega los cambios.
 
 ## Desarrollo local
 
@@ -127,7 +163,10 @@ El script crea:
 - `profiles`: perfiles vinculados a los usuarios de Supabase Auth.
 - `history`: registros de viajes.
 - Políticas de Row Level Security para acceder a los datos propios.
-- Un trigger que crea el perfil cuando se registra un usuario.
+- Un trigger que crea el perfil y obtiene el nombre inicial de los
+  metadatos del usuario o de la parte del correo anterior a `@`.
+- Un trigger que sincroniza los cambios de `display_name` en Auth con
+  `profiles.first_name`.
 - La función `get_history_stats` para calcular las estadísticas del historial.
 
 ### Autenticación
@@ -189,6 +228,19 @@ Para enviar solicitudes desde el entorno local, también debes permitir `localho
 | `pnpm test:ui` | Abre la interfaz de Vitest |
 
 Las pruebas existentes cubren cálculos de fechas y liquidaciones, rutas protegidas, el formulario de login y el proveedor de autenticación.
+
+Para comprobar la compilación de producción localmente:
+
+```bash
+pnpm build
+pnpm preview
+```
+
+`pnpm preview` sirve el contenido de `dist`. Después de modificar el
+código, vuelve a ejecutar `pnpm build` para actualizar esa compilación.
+
+Si utilizas otro puerto, ajusta la URL de recuperación de contraseña y
+autorízala también en Supabase.
 
 ## Despliegue en Vercel
 
