@@ -1,8 +1,26 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import LoginFormSection from "./LoginFormSection";
 import { useAuth } from "../../context/auth/useAuth";
+
+vi.mock("@marsidev/react-turnstile", () => ({
+  Turnstile: ({ onSuccess }) => (
+    <button
+      type="button"
+      data-testid="turnstile"
+      onClick={() => onSuccess("turnstile-token")}
+    >
+      Completar verificación
+    </button>
+  ),
+}));
 
 vi.mock("../../context/auth/useAuth", () => ({
   useAuth: vi.fn(),
@@ -25,6 +43,10 @@ function renderForm() {
   );
 }
 
+function completeTurnstile() {
+  fireEvent.click(screen.getByTestId("turnstile"));
+}
+
 beforeEach(() => {
   vi.resetAllMocks();
 
@@ -42,6 +64,8 @@ afterEach(() => {
 describe("Formulario de login", () => {
   it("muestra un error si los campos están vacíos", async () => {
     renderForm();
+
+    completeTurnstile();
 
     fireEvent.click(
       screen.getByRole("button", { name: "Entrar al Turno" }),
@@ -62,6 +86,7 @@ describe("Formulario de login", () => {
     });
 
     renderForm();
+    completeTurnstile();
 
     fireEvent.change(screen.getByPlaceholderText("tu@email.com"), {
       target: { value: "prueba@example.com" },
@@ -95,6 +120,8 @@ describe("Formulario de login", () => {
 
     renderForm();
 
+    completeTurnstile();
+
     const button = screen.getByRole("button", {
       name: "Entrando...",
     });
@@ -108,6 +135,7 @@ describe("Formulario de login", () => {
     });
 
     renderForm();
+    completeTurnstile();
 
     fireEvent.change(screen.getByPlaceholderText("tu@email.com"), {
       target: { value: "Marcos@Example.COM" },
@@ -121,10 +149,12 @@ describe("Formulario de login", () => {
       screen.getByRole("button", { name: "Entrar al Turno" }),
     );
 
-    expect(loginMock).toHaveBeenCalledTimes(1);
-    expect(loginMock).toHaveBeenCalledWith({
-      email: "marcos@example.com",
-      password: "contraseña-de-prueba",
+    await waitFor(() => {
+      expect(loginMock).toHaveBeenCalledTimes(1);
+      expect(loginMock).toHaveBeenCalledWith({
+        email: "marcos@example.com",
+        password: "contraseña-de-prueba",
+      });
     });
 
     expect(
@@ -145,6 +175,7 @@ describe("Formulario de login", () => {
       });
 
     renderForm();
+    completeTurnstile();
 
     fireEvent.change(screen.getByPlaceholderText("tu@email.com"), {
       target: { value: "prueba@example.com" },
@@ -167,15 +198,32 @@ describe("Formulario de login", () => {
       ),
     ).not.toBeNull();
 
-    expect(button.disabled).toBe(false);
+    completeTurnstile();
+
+    await waitFor(() => expect(button.disabled).toBe(false));
 
     // El segundo intento recibe una respuesta correcta.
     fireEvent.click(button);
 
-    expect(loginMock).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(loginMock).toHaveBeenCalledTimes(2));
 
     expect(
       screen.queryByText("No se pudo conectar. Inténtalo de nuevo."),
     ).toBeNull();
+  });
+
+  it("requiere completar Turnstile antes de iniciar sesión", () => {
+    renderForm();
+
+    const button = screen.getByRole("button", {
+      name: "Entrar al Turno",
+    });
+
+    expect(button.disabled).toBe(true);
+    expect(loginMock).not.toHaveBeenCalled();
+
+    completeTurnstile();
+
+    expect(button.disabled).toBe(false);
   });
 });

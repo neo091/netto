@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import useLoginForm from "../../hooks/useLoginForm";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useState } from "react";
-import { useRef } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
@@ -21,30 +19,21 @@ function LoginFormSection() {
 
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef(null);
-  const submittingRef = useRef(false);
 
-  const handleRequestLogin = async (e) => {
-    e.preventDefault();
-
-    if (submittingRef.current) return;
+  const handleRequestLogin = async (event) => {
+    event.preventDefault();
 
     if (!turnstileToken) {
       toast.error("Completa la verificación antes de enviar.");
       return;
     }
 
-    submittingRef.current = true;
-
     try {
-      handleLogin();
-    } catch (error) {
-      console.log(error?.message);
+      await handleLogin();
     } finally {
       // Cada token solo puede utilizarse una vez.
       setTurnstileToken("");
       turnstileRef.current?.reset();
-
-      submittingRef.current = false;
     }
   };
 
