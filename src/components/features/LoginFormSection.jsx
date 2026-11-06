@@ -2,6 +2,11 @@ import { Link } from "react-router-dom";
 import useLoginForm from "../../hooks/useLoginForm";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useRef } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 function LoginFormSection() {
   const {
@@ -14,12 +19,41 @@ function LoginFormSection() {
     formError,
   } = useLoginForm();
 
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef(null);
+  const submittingRef = useRef(false);
+
+  const handleRequestLogin = async (e) => {
+    e.preventDefault();
+
+    if (submittingRef.current) return;
+
+    if (!turnstileToken) {
+      toast.error("Completa la verificación antes de enviar.");
+      return;
+    }
+
+    submittingRef.current = true;
+
+    try {
+      handleLogin();
+    } catch (error) {
+      console.log(error?.message);
+    } finally {
+      // Cada token solo puede utilizarse una vez.
+      setTurnstileToken("");
+      turnstileRef.current?.reset();
+
+      submittingRef.current = false;
+    }
+  };
+
   useEffect(() => {
     if (formError) toast.error(formError);
   }, [formError]);
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleRequestLogin}>
       <div className="bg-gray-800 p-8 rounded-3xl shadow-2xl border border-gray-700 flex flex-col gap-6">
         <h3 className="text-xl font-bold text-white mb-2">Iniciar Sesión</h3>
 
@@ -61,8 +95,25 @@ function LoginFormSection() {
           </div>
         </div>
 
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={TURNSTILE_SITE_KEY}
+          options={{
+            action: "request-access",
+            theme: "dark",
+          }}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken("")}
+          onError={() => {
+            setTurnstileToken("");
+            toast.error(
+              "No se pudo completar la verificación. Inténtalo de nuevo.",
+            );
+          }}
+        />
+
         <button
-          disabled={authLoading}
+          disabled={authLoading || !turnstileToken}
           type="submit"
           className="rounded-2xl p-4 bg-green-500 text-black font-bold text-lg hover:bg-green-400 transition-colors shadow-lg shadow-green-500/20 mt-2"
         >

@@ -7,8 +7,7 @@ export default function useLoginForm() {
   const [formError, setFormError] = useState(null);
   const { login, authLoading, error: loginError } = useAuth();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     setFormError(null);
     const validEmail = email.trim().toLowerCase();
 
